@@ -42,3 +42,9 @@ Endpoints: `/` (index), `/healthz`, `GET|POST /api/plans` (params/body: `vibe`, 
 runs on pushes to `main` — tests, builds the image, pushes it to
 `ghcr.io/venkse/funtog` (`latest` + short-SHA tags), and smoke-tests the pushed image
 against `/healthz`. Pull a deployed build with `docker pull ghcr.io/venkse/funtog:latest`.
+
+**Website:** https://venkse.github.io/FunTog/ — a static build of `apps/web`, deployed by
+`.github/workflows/pages.yml` on every push to `main`. It bundles the real suggestion-engine
+and venue-knowledge services with esbuild so plan generation runs entirely client-side, and
+hosts the character demo pages under `/demo/`. Build locally with
+`npm run build --workspace @funtog/web` (output in `apps/web/dist`).

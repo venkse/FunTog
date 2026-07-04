@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FunTog · plan your night</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --plum:#1E1430; --plum-2:#2A1C44; --coral:#FF6F61; --coral-dark:#E8533F;
+    --flame-1:#FFD66B; --flame-2:#FF8A3D; --spark:#FFE08A; --blush:#FF9E8A;
+    --cream:#F6ECD9; --muted:#B9A7C9; --ink:#23163B;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; color:var(--cream);
+    font-family:"Nunito",system-ui,sans-serif;
+    background:radial-gradient(120% 90% at 50% 8%, #34225A 0%, var(--plum) 55%, #160E26 100%);
+    display:flex; flex-direction:column; align-items:center; padding:40px 20px 64px;
+  }
+  .eyebrow{font-weight:700;letter-spacing:.28em;text-transform:uppercase;font-size:.72rem;color:var(--muted);margin:0}
+  h1{font-family:"Fredoka";font-weight:700;font-size:clamp(2rem,5vw,3rem);margin:.15em 0 0}
+  h1 b{color:var(--coral)}
+  .sub{color:var(--muted);max-width:46ch;text-align:center;line-height:1.5;margin:.6em 0 2em}
+
+  form{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:640px;width:100%}
+  input,select{
+    font:inherit;color:var(--cream);background:rgba(255,255,255,.07);
+    border:1.5px solid rgba(255,255,255,.16);border-radius:12px;padding:10px 14px;min-width:0;
+  }
+  input::placeholder{color:var(--muted)}
+  input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--spark);outline-offset:2px}
+  #vibe{flex:2 1 220px} #area{flex:1 1 130px}
+  select{flex:0 1 auto} select option{color:var(--ink)}
+  button{
+    font-family:"Fredoka";font-weight:600;font-size:1rem;border:none;border-radius:12px;cursor:pointer;
+    padding:10px 22px;color:#3a1c00;background:linear-gradient(180deg,var(--flame-1),var(--flame-2));
+    transition:transform .08s,filter .15s;
+  }
+  button:hover{filter:brightness(1.06)} button:active{transform:translateY(1px)}
+
+  #plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:900px;width:100%;margin-top:28px}
+  .plan{
+    background:rgba(255,255,255,.055);border:1.5px solid rgba(255,255,255,.12);border-radius:16px;padding:18px;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .plan h3{font-family:"Fredoka";font-weight:600;font-size:1.02rem;margin:0;color:var(--spark);line-height:1.35}
+  .stop{display:flex;gap:10px;align-items:baseline;line-height:1.4}
+  .stop time{font-family:"Fredoka";font-weight:600;color:var(--coral);flex:0 0 3.2em}
+  .stop .what{font-weight:600}
+  .stop .tags{color:var(--muted);font-size:.82rem}
+  .empty{color:var(--muted);text-align:center;margin-top:28px}
+
+  .links{margin-top:44px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .links a{
+    color:var(--cream);text-decoration:none;font-family:"Fredoka";font-weight:600;font-size:.9rem;
+    border:1.5px solid rgba(255,255,255,.16);border-radius:999px;padding:8px 16px;
+    background:rgba(255,255,255,.06);transition:border-color .15s,background .15s;
+  }
+  .links a:hover{border-color:var(--coral);background:rgba(255,111,97,.14)}
+  footer{margin-top:34px;color:var(--muted);font-size:.8rem;text-align:center;line-height:1.6}
+  footer a{color:var(--blush)}
+</style>
+</head>
+<body>
+  <p class="eyebrow">Group event planner</p>
+  <h1>Meet <b>FunTog</b></h1>
+  <p class="sub">The cheeky friend who actually plans the night. Type a vibe — the real
+  suggestion engine (running right here in your browser) drafts three night arcs and grounds
+  them against the venue knowledge service.</p>
+
+  <form id="form">
+    <input id="vibe" placeholder="vibe — e.g. rooftop sunset drinks" value="chill birthday dinner" aria-label="vibe" />
+    <input id="area" placeholder="area" value="shoreditch" aria-label="area" />
+    <select id="mode" aria-label="grounding mode">
+      <option value="grounded" selected>grounded (with venues)</option>
+      <option value="shapes">shapes (structure only)</option>
+    </select>
+    <button type="submit">Plan my night</button>
+  </form>
+
+  <section id="plans" aria-live="polite"></section>
+  <p class="empty" id="empty">Hit “Plan my night” to see FunTog cook.</p>
+
+  <nav class="links">
+    <a href="./demo/funtog-mascot.html">mascot</a>
+    <a href="./demo/funtog-characters.html">characters</a>
+    <a href="./demo/character-exploration.html">exploration</a>
+    <a href="./demo/funtog-helper.html">helper</a>
+  </nav>
+
+  <footer>
+    Plans are generated client-side by the actual <code>@funtog/suggestion-engine</code> and
+    <code>@funtog/venue-knowledge</code> packages (deterministic stub venue provider).<br />
+    Source: <a href="https://github.com/venkse/FunTog">github.com/venkse/FunTog</a>
+  </footer>
+
+  <script type="module" src="./assets/main.js"></script>
+</body>
+</html>

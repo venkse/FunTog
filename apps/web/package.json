@@ -1,0 +1,12 @@
+{ "name": "@funtog/web", "version": "0.0.0", "private": true,
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@funtog/contracts": "*",
+    "@funtog/suggestion-engine": "*",
+    "@funtog/venue-knowledge": "*"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  } }
