@@ -1,0 +1,37 @@
+sequenceDiagram
+  autonumber
+  actor Org as Organizer
+  actor Fr as Friends
+  participant CONV as Convergence
+  participant SUG as Suggestion
+  participant CHAR as Character
+  participant MEM as Memory
+  participant RT as Realtime
+  Org->>CONV: spark(crew, vibe, constraints)
+  CONV->>MEM: GetPersonaState + GetLedgerSnapshot
+  MEM-->>CONV: PersonaState + LedgerSnapshot
+  CONV->>SUG: PlanRequest (personaHints)
+  SUG-->>CONV: PlanCandidates (neutral)
+  CONV->>CHAR: Render(PlanCandidates)
+  CHAR->>MEM: GetPersonaState
+  MEM-->>CHAR: PersonaState
+  CHAR-->>CONV: VoicePacket
+  CONV->>RT: broadcast candidates + join link
+  RT-->>Fr: candidates
+  Note over Fr,RT: async spine — late joiners read state<br/>sync delight — live votes when present
+  Fr->>CONV: claimIdentity + castVote
+  CONV->>RT: broadcast live tallies
+  Org->>CONV: converge()
+  CONV->>CONV: aggregate tally + apply fairness (deterministic, uses Ledger)
+  CONV->>CHAR: Mediate(tally, LedgerSnapshot)
+  CHAR-->>CONV: read + advocacy (voicing the verdict)
+  alt split, nobody owed
+    CONV->>CONV: pick authoritative WheelResult
+    CONV->>RT: broadcast WheelResult
+  else consensus or fairness call
+    CONV->>RT: broadcast Winner
+  end
+  CONV->>MEM: append NightRecord
+  MEM->>MEM: project ledger + timeline
+  MEM-->>CHAR: NightRecord (stream)
+  CHAR->>MEM: WritePersonaDelta (evolution)

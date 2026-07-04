@@ -1,0 +1,18 @@
+flowchart TB
+  REQ["PlanRequest<br/>constraints · area · vibe · persona hints · mode"]
+  REQ --> CTX["Context Assembler<br/>normalize → cache key"]
+  CTX --> CACHE{"Semantic cache hit?"}
+  CACHE -->|"hit"| OUT["PlanCandidates (neutral)"]
+  CACHE -->|"miss"| GEN["Structure Generator (LLM)<br/>plan arc + venue SLOTS (typed constraints)"]
+  GEN --> MODE{"Grounding mode?"}
+  MODE -->|"shapes"| VAL["Validator + Safety<br/>schema · dedupe · age-safe · no invented venues"]
+  MODE -->|"grounded"| GRD["Grounding Resolver"]
+  GRD -->|"ResolveVenues(slotSpec, area)"| VEN["Venue / Knowledge"]
+  VEN --> FEAS["Feasibility + Repair<br/>open · walkable · budget · constraints"]
+  FEAS -->|"infeasible: re-bind / adjust"| GRD
+  FEAS --> VAL
+  VAL --> OUT
+  OUT --> RET["→ returned to Orchestrator<br/>(which then asks Character to voice it)"]
+
+  classDef ext fill:#241a3a,stroke:#7c5cff,color:#ffffff;
+  class VEN ext;

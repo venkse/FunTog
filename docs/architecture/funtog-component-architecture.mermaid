@@ -1,0 +1,47 @@
+flowchart TB
+  subgraph CLIENT["Client tier (thin)"]
+    APP["Mobile / Web app"]
+  end
+  subgraph EDGE["Edge / BFF"]
+    GW["API Gateway<br/>auth · rate-limit · holds LLM keys"]
+    RT["Realtime fan-out<br/>pub/sub · presence"]
+  end
+  subgraph CORE["Domain services — deterministic, correctness-critical"]
+    CREW["Crew + Identity"]
+    CONV["Convergence Orchestrator<br/>sessions · votes · verdict · wheel authority"]
+    MEM["Memory + Ledger<br/>night archive · fairness ledger · persona state"]
+  end
+  subgraph GEN["Generation tier — probabilistic, scalable"]
+    SUG["Suggestion Engine<br/>candidate plans (neutral)"]
+    CHAR["Character Engine<br/>voice · evolution · mediation"]
+    VEN["Venue / Knowledge<br/>plan grounding"]
+  end
+  subgraph DATA["Data tier"]
+    DDB[("Durable DB")]
+    RDB[("Realtime store")]
+    CACHE[("Generation cache")]
+  end
+  LLM["LLM provider"]
+  PLACES["Places / Maps data"]
+  APP -->|"HTTPS"| GW
+  APP <-->|"live state"| RT
+  RT <--> CONV
+  GW --> CREW
+  GW --> CONV
+  CONV -->|"PlanRequest"| SUG
+  SUG -->|"PlanCandidates (neutral)"| CONV
+  CONV -->|"Render / Mediate"| CHAR
+  CHAR -->|"VoicePacket"| CONV
+  CONV -->|"NightRecord"| MEM
+  MEM -->|"LedgerSnapshot · PersonaState"| CONV
+  MEM -->|"PersonaState"| CHAR
+  SUG -->|"ResolveVenues"| VEN
+  CREW --> DDB
+  MEM --> DDB
+  CONV --> RDB
+  SUG --> CACHE
+  SUG --> LLM
+  CHAR --> LLM
+  VEN --> PLACES
+  classDef ext fill:#241a3a,stroke:#7c5cff,color:#ffffff;
+  class LLM,PLACES ext;

@@ -1,0 +1,40 @@
+flowchart TB
+  ORCH["Convergence Orchestrator"]
+  CHAR["Character Engine"]
+  CFG["Customization API"]
+  APP["Apps (nostalgia views)"]
+
+  subgraph MEM["Memory + Ledger"]
+    subgraph WRITE["Command side (append-only)"]
+      AW["Append API<br/>NightRecord · PersonaDelta · Overrides"]
+      ES[("Event Store<br/>immutable NightRecord + delta log")]
+    end
+    subgraph PROJ["Projection side (CQRS read models)"]
+      PJ["Projectors<br/>fold events → read models"]
+      LRM[("Ledger<br/>got · overruled · streak")]
+      PRM[("PersonaState<br/>base + learned + overrides")]
+      TRM[("Crew timeline<br/>highlight reel · level")]
+    end
+    QRY["Query API<br/>GetLedger · GetPersonaState · GetTimeline"]
+    STR["NightRecord stream (out)"]
+  end
+
+  ORCH -->|"AppendNightRecord"| AW
+  CHAR -->|"WritePersonaDelta"| AW
+  CFG -->|"SetOverrides / SetPersona"| AW
+  AW --> ES
+  ES --> PJ
+  PJ --> LRM
+  PJ --> PRM
+  PJ --> TRM
+  LRM --> QRY
+  PRM --> QRY
+  TRM --> QRY
+  ORCH -->|"GetLedger / GetPersonaState"| QRY
+  CHAR -->|"GetPersonaState"| QRY
+  APP -->|"GetTimeline"| QRY
+  ES --> STR
+  STR -->|"consume (evolution)"| CHAR
+
+  classDef ext fill:#241a3a,stroke:#7c5cff,color:#ffffff;
+  class ORCH,CHAR,CFG,APP ext;

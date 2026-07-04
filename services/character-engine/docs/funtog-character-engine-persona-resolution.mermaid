@@ -1,0 +1,9 @@
+flowchart LR
+  BASE["Base persona<br/>versioned voice pack"] --> RES
+  LEARN["Learned deltas<br/>from evolution"] --> RES
+  OVER["User overrides<br/>explicit crew choice"] --> RES
+  RES["PersonaState Resolver"] --> EP["Effective persona<br/>→ prompt"]
+  RES -.->|"precedence: override &gt; learned &gt; base"| EP
+
+  classDef win fill:#1f3a14,stroke:#b8f25c,color:#ffffff;
+  class OVER win;

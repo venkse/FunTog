@@ -1,0 +1,9 @@
+flowchart LR
+  LOG[("NightRecord log<br/>append-only · immutable<br/>single source of truth")]
+  LOG --> LP["Ledger Projector"] --> LED["Fairness ledger<br/>→ Orchestrator verdict"]
+  LOG --> PP["Persona Projector"] --> PER["PersonaState (learned)<br/>→ Character voice"]
+  LOG --> TP["Timeline Projector"] --> TL["Crew highlight reel<br/>→ nostalgia"]
+  NOTE["Projections are derived and rebuildable.<br/>Evolve the logic → replay the log → re-derive, no data loss."]
+  LOG -.-> NOTE
+  classDef note fill:#241a3a,stroke:#ffc94d,color:#ffffff;
+  class NOTE note;

@@ -1,0 +1,12 @@
+stateDiagram-v2
+  [*] --> Draft: organizer sparks
+  Draft --> Gathering: candidates ready (or fallback templates)
+  Gathering --> Gathering: join / vote / change vote (async)
+  Gathering --> Converging: organizer triggers converge
+  Converging --> Resolved: clear winner or fairness call
+  Converging --> Spinning: split, nobody owed
+  Spinning --> Resolved: WheelResult chosen + broadcast
+  Resolved --> Archived: NightRecord persisted
+  Archived --> [*]
+  Gathering --> Cancelled: organizer cancels / TTL expires
+  Cancelled --> [*]

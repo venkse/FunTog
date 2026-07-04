@@ -1,0 +1,33 @@
+flowchart TB
+  ORCH["Convergence Orchestrator"]
+  LLM["LLM provider"]
+  VEN["Venue / Knowledge"]
+  CACHE[("Generation cache")]
+
+  subgraph SUG["Suggestion Engine"]
+    CA["Context Assembler"]
+    SC["Semantic Cache adapter"]
+    SGN["Structure Generator"]
+    GR["Grounding Resolver"]
+    FR["Feasibility + Repair"]
+    VS["Validator + Safety"]
+    RH["Refinement Handler<br/>tweak one plan"]
+    TF["Template Fallback<br/>plan shapes"]
+  end
+
+  ORCH -->|"GeneratePlans / RefinePlan"| CA
+  RH --> CA
+  CA --> SC
+  SC --> CACHE
+  CA --> SGN
+  SGN --> LLM
+  SGN --> GR
+  GR -->|"ResolveVenues"| VEN
+  GR --> FR
+  FR --> VS
+  VS -->|"PlanCandidates (neutral)"| ORCH
+  SGN -. "LLM down" .-> TF
+  VEN -. "down → shapes mode" .-> FR
+
+  classDef ext fill:#241a3a,stroke:#7c5cff,color:#ffffff;
+  class ORCH,LLM,VEN,CACHE ext;

@@ -1,0 +1,6 @@
+{
+  "name": "@funtog/contracts",
+  "version": "0.3.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts"
+}

@@ -1,0 +1,8 @@
+{ "name": "@funtog/convergence-orchestrator", "version": "0.0.0", "main": "src/index.ts",
+  "scripts": {
+    "test": "node --import tsx --test tests/*.test.ts",
+    "bench": "node --import tsx --expose-gc perf/perf.bench.ts",
+    "stress": "node --import tsx --expose-gc perf/stress.bench.ts"
+  },
+  "dependencies": { "@funtog/contracts": "*" },
+  "devDependencies": { "@funtog/mocks": "*", "@funtog/test-harness": "*", "@funtog/perf": "*" } }

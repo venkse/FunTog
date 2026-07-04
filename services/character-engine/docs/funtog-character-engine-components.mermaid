@@ -1,0 +1,35 @@
+flowchart TB
+  ORCH["Convergence Orchestrator"]
+  CFG["Customization API<br/>SetPersona · SetOverrides"]
+  LLM["LLM provider"]
+  MEM["Memory + Ledger"]
+
+  subgraph CE["Character Engine"]
+    subgraph RENDER["Render path — hot · synchronous · LLM"]
+      RP["Render API<br/>render · mediate"]
+      RES["PersonaState Resolver<br/>override &gt; learned &gt; base"]
+      PA["Prompt Assembler"]
+      SG["Safety + Consistency Guard<br/>schema · constitution · on-voice · age-safe"]
+    end
+    REG["Persona Registry<br/>versioned voice packs + sprite map"]
+    subgraph EVO["Evolution path — cold · async · batch"]
+      NC["NightRecord Consumer"]
+      SX["Signal Extractor<br/>picks · tweaks · overrules · recurring constraints"]
+      EE["Evolution Engine<br/>proposes bounded deltas · level / powers"]
+    end
+  end
+
+  ORCH -->|"Render / Mediate (via Generation Coordinator)"| RP
+  RP --> RES
+  CFG --> RES
+  REG --> RES
+  RES -->|"GetPersonaState"| MEM
+  RES --> PA --> LLM --> SG
+  SG -->|"VoicePacket"| ORCH
+  MEM -->|"NightRecord stream"| NC
+  NC --> SX --> EE
+  EE -->|"PersonaState delta (bounded)"| MEM
+  CFG -->|"override lock"| MEM
+
+  classDef ext fill:#241a3a,stroke:#7c5cff,color:#ffffff;
+  class ORCH,LLM,MEM,CFG ext;

@@ -1,0 +1,20 @@
+{
+  "name": "@funtog/test-harness",
+  "version": "0.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "node --import tsx --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@funtog/contracts": "*"
+  },
+  "devDependencies": {
+    "@funtog/mocks": "*",
+    "@funtog/crew-identity": "*",
+    "@funtog/memory-ledger": "*",
+    "@funtog/venue-knowledge": "*",
+    "@funtog/suggestion-engine": "*",
+    "@funtog/character-engine": "*",
+    "@funtog/convergence-orchestrator": "*"
+  }
+}

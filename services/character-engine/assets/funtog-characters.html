@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FunTog — Choose Your Character</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14091F; --bg2:#1E1430; --card:#2A1C44; --card2:#362356;
+    --coral:#FF6F61; --coralD:#E8533F; --gold:#FFC24B; --cream:#F6ECD9; --muted:#B9A7C9; --ink:#23163B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1100px 560px at 50% -8%, #2A1640 0%, var(--bg) 60%);
+       color:var(--cream);font-family:'Nunito',sans-serif;min-height:100vh;padding:40px 20px 64px}
+  .wrap{max-width:900px;margin:0 auto;text-align:center}
+  .kicker{font-family:'Fredoka';font-weight:600;font-size:12.5px;letter-spacing:.28em;color:var(--coral);text-transform:uppercase}
+  h1{font-family:'Fredoka';font-weight:700;font-size:clamp(28px,4.4vw,42px);margin:8px 0 10px}
+  .sub{color:var(--muted);font-size:15.5px;max-width:640px;margin:0 auto 26px;line-height:1.5}
+  .sub em{color:var(--gold);font-style:normal;font-weight:700}
+
+  /* character picker */
+  .picker{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+  .pick{background:var(--card);border:2px solid transparent;border-radius:16px;padding:8px 8px 6px;cursor:pointer;
+        width:86px;transition:transform .15s, border-color .15s}
+  .pick:hover{transform:translateY(-3px)}
+  .pick.on{border-color:var(--gold);background:var(--card2)}
+  .pick svg{width:58px;height:58px;display:block;margin:0 auto}
+  .pick .nm{font-family:'Fredoka';font-weight:600;font-size:12px;margin-top:4px;color:var(--cream)}
+
+  /* stage */
+  .stagewrap{position:relative;width:340px;height:340px;margin:0 auto}
+  .stage{position:absolute;inset:0;border-radius:28px;
+         background:radial-gradient(260px 220px at 50% 44%, rgba(255,111,97,.16), rgba(0,0,0,0) 72%),
+                    linear-gradient(180deg,var(--card) 0%, #241740 100%);
+         box-shadow:0 16px 44px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center}
+  .rig{display:none;width:280px;height:284px;overflow:visible}
+  .rig.show{display:block}
+  svg *{transform-box:fill-box}
+  .sig-orbit{transform-box:view-box}
+
+  /* fx overlay */
+  .fx{position:absolute;inset:0;pointer-events:none;border-radius:28px;overflow:hidden}
+  .confetti{position:absolute;width:9px;height:9px;border-radius:2px;opacity:0;top:38%}
+  .m-tada .confetti,.m-cheer .confetti{animation:conf 1.15s ease-out infinite}
+  .m-cheer .confetti{animation-duration:1.5s}
+  @keyframes conf{
+    0%{opacity:0;transform:translate(0,0) rotate(0)}
+    12%{opacity:1}
+    100%{opacity:0;transform:translate(var(--dx),140px) rotate(320deg)}
+  }
+  .dots{position:absolute;right:16%;top:14%;display:none;gap:6px}
+  .m-thinking .dots{display:flex}
+  .dots i{width:9px;height:9px;border-radius:50%;background:var(--muted);opacity:.35;animation:dot 1.2s infinite}
+  .dots i:nth-child(2){width:12px;height:12px;animation-delay:.2s}
+  .dots i:nth-child(3){width:16px;height:16px;animation-delay:.4s}
+  @keyframes dot{0%,100%{opacity:.25}50%{opacity:.9}}
+
+  /* caption: the service contract made visible */
+  .caption{margin-top:16px;font-size:13px;color:var(--muted)}
+  .caption code{background:var(--card);border-radius:8px;padding:3px 9px;color:var(--gold);font-size:12.5px}
+
+  /* mood buttons */
+  .moods{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+  .mood{background:var(--card);color:var(--cream);border:0;border-radius:999px;padding:9px 16px;
+        font-family:'Fredoka';font-weight:600;font-size:13.5px;cursor:pointer;transition:background .15s,transform .12s}
+  .mood:hover{transform:translateY(-2px)}
+  .mood.on{background:var(--coral);color:var(--ink)}
+  .controls{margin-top:16px}
+  .play{background:var(--gold);color:var(--ink);border:0;border-radius:999px;padding:11px 22px;
+        font-family:'Fredoka';font-weight:700;font-size:14.5px;cursor:pointer}
+  .play:hover{filter:brightness(1.06)}
+  .nightline{margin-top:10px;font-size:13.5px;color:var(--muted);min-height:20px;font-style:italic}
+
+  /* ================= shared "alive" + mood grammar (drives every rig) ================= */
+  .breathe{animation:breathe 3.1s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+  .lidL,.lidR{transform:scaleY(0);transform-origin:50% 0%;transition:transform .18s}
+  .mouth-open,.mouth-flat{opacity:0}
+  .mouth-smile{opacity:1}
+
+  /* plotting: narrowed eyes, flat mouth, lean in */
+  .m-plotting .lidL,.m-plotting .lidR{transform:scaleY(.42)}
+  .m-plotting .mouth-smile{opacity:0}.m-plotting .mouth-flat{opacity:1}
+  .m-plotting .rig.show{transform:rotate(-2.5deg)}
+
+  /* thinking: pupils drift up, small o mouth */
+  .m-thinking .pupilL,.m-thinking .pupilR{transform:translate(-4px,-6px)}
+  .m-thinking .mouth-smile{opacity:0}
+  .m-thinking .mouth-open{opacity:1;transform:scale(.62);transform-origin:center}
+
+  /* wink: right lid loops closed */
+  .m-wink .lidR{animation:winky 1.6s ease-in-out infinite}
+  @keyframes winky{0%,25%,75%,100%{transform:scaleY(0)}40%,60%{transform:scaleY(1)}}
+  .m-wink .char-pip .lidR{animation:winky 1.6s ease-in-out infinite}
+  .m-wink .char-pip .lidL{animation:none}
+
+  /* mischief: crescent eyes, wide grin, wiggle */
+  .m-mischief .lidL,.m-mischief .lidR{transform:scaleY(.5)}
+  .m-mischief .mouth-smile{transform:scaleX(1.3);transform-origin:center}
+  .m-mischief .rig.show{animation:wiggle 1s ease-in-out infinite}
+  @keyframes wiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+
+  /* smug: half lids, lean back */
+  .m-smug .lidL,.m-smug .lidR{transform:scaleY(.58)}
+  .m-smug .rig.show{transform:rotate(3.5deg) translateY(2px)}
+
+  /* tada: jump + open mouth (+ confetti via .fx) */
+  .m-tada .rig.show{animation:jump .8s cubic-bezier(.3,1.6,.5,1) infinite}
+  @keyframes jump{0%,100%{transform:translateY(0)}45%{transform:translateY(-22px)}}
+  .m-tada .mouth-smile{opacity:0}.m-tada .mouth-open{opacity:1}
+
+  /* cheer: fast bounce, arms up, open mouth */
+  .m-cheer .rig.show{animation:bounce .55s ease-in-out infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .m-cheer .armL{transform:rotate(-42deg)}
+  .m-cheer .armR{transform:rotate(42deg)}
+  .armL{transform-origin:80% 20%;transition:transform .2s}
+  .armR{transform-origin:20% 20%;transition:transform .2s}
+  .m-cheer .mouth-smile{opacity:0}.m-cheer .mouth-open{opacity:1}
+
+  /* ================= character signatures (always alive) ================= */
+  .sig-boing{animation:boing 2.6s ease-in-out infinite;transform-origin:50% 100%}
+  @keyframes boing{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(11deg)}}
+  .m-plotting .char-momo .sig-boing{animation-duration:5.5s;opacity:.6}          /* star-charge (dims) */
+
+  .sig-flame{animation:flick 1.5s ease-in-out infinite;transform-origin:50% 100%}
+  @keyframes flick{0%,100%{transform:scale(1) rotate(-2deg)}50%{transform:scale(1.1,1.18) rotate(2deg)}}
+
+  .char-pip .lidL,.char-pip .lidR{animation:slowblink 4.4s infinite}             /* slow-blink idle */
+  @keyframes slowblink{0%,92%,100%{transform:scaleY(0)}95%,97%{transform:scaleY(1)}}
+  .m-plotting .char-pip .lidL,.m-plotting .char-pip .lidR,
+  .m-mischief .char-pip .lidL,.m-mischief .char-pip .lidR,
+  .m-smug .char-pip .lidL,.m-smug .char-pip .lidR{animation:none}
+
+  .sig-glow{animation:glow 2.2s ease-in-out infinite;transform-origin:center}
+  @keyframes glow{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.16)}}
+  .m-tada .char-lumi .sig-glow{animation:shine .7s ease-in-out infinite}          /* full-shine */
+  @keyframes shine{0%,100%{opacity:.9;transform:scale(1.25)}50%{opacity:1;transform:scale(1.6)}}
+  .m-thinking .char-lumi .sig-glow{animation-duration:4.5s;opacity:.35}           /* dim-hover */
+
+  .sig-wingL{animation:flapL 1.1s ease-in-out infinite;transform-origin:90% 80%}
+  .sig-wingR{animation:flapR 1.1s ease-in-out infinite;transform-origin:10% 80%}
+  @keyframes flapL{0%,100%{transform:rotate(6deg)}50%{transform:rotate(-14deg)}}
+  @keyframes flapR{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(14deg)}}
+
+  .char-boo.show{animation:floaty 3.6s ease-in-out infinite}                       /* float idle */
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .m-mischief .char-boo.show{animation:vanish 1.6s ease-in-out infinite}           /* vanish-reappear */
+  @keyframes vanish{0%,100%{opacity:1}50%{opacity:.25}}
+  .sig-twinkle{animation:twinkle 1.4s ease-in-out infinite;transform-origin:center}
+  @keyframes twinkle{0%,100%{opacity:.5;transform:scale(.8) rotate(0)}50%{opacity:1;transform:scale(1.25) rotate(24deg)}}
+
+  .sig-orbit{animation:orbit 14s linear infinite;transform-origin:120px 128px}
+  @keyframes orbit{to{transform:rotate(360deg)}}
+  .m-tada .char-dizzy .sig-orbit{animation-duration:1.6s}                          /* strobe-burst */
+  .m-cheer .char-dizzy .sig-orbit{animation-duration:3s}                           /* spin-up */
+
+  .sig-tail{animation:sway 2.8s ease-in-out infinite;transform-origin:10% 90%}
+  @keyframes sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(8deg)}}
+  .m-plotting .char-koko .sig-tail{animation:none;transform:rotate(2deg)}          /* tail-question: holds the ? */
+
+  @media (prefers-reduced-motion:reduce){
+    .breathe,.rig.show,.lidL,.lidR,.sig-boing,.sig-flame,.sig-glow,.sig-wingL,.sig-wingR,
+    .sig-twinkle,.sig-orbit,.sig-tail,.confetti,.dots i,.char-boo.show,.char-pip .lidL,.char-pip .lidR
+    {animation:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Character Engine · persona picker</div>
+  <h1>Choose your FunTog</h1>
+  <p class="sub">Every character is a registered <em>persona pack</em>: same eight-mood vocabulary, its own animation
+  language. The engine emits a mood; the client plays that persona's sprite. Pick a friend, poke its moods.</p>
+
+  <div class="picker" id="picker"></div>
+
+  <div class="stagewrap">
+    <div class="stage" id="stage"></div>
+    <div class="fx" id="fx"><div class="dots"><i></i><i></i><i></i></div></div>
+  </div>
+
+  <div class="caption" id="caption"></div>
+  <div class="moods" id="moods"></div>
+  <div class="controls"><button class="play" id="playNight">▶ Play a whole night</button></div>
+  <div class="nightline" id="nightline"></div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------ rigs
+   Every rig exposes the shared grammar:
+   .pupilL/.pupilR  .lidL/.lidR (body-coloured)  .mouth-smile/.mouth-open/.mouth-flat
+   .armL/.armR      .sig-*  (signature, always alive)                                 */
+const RIGS = {
+troublemaker: `
+<svg class="rig char-troublemaker" viewBox="0 0 240 250">
+ <g class="breathe">
+  <g class="sig-flame"><path d="M120 8 C133 30 128 44 120 52 C112 44 107 30 120 8 Z" fill="#FFC24B"/><circle cx="120" cy="40" r="5" fill="#FFF2C2"/></g>
+  <g class="armL"><rect x="40" y="150" width="30" height="13" rx="6.5" fill="#E8533F" transform="rotate(12 55 156)"/></g>
+  <g class="armR"><rect x="170" y="150" width="30" height="13" rx="6.5" fill="#E8533F" transform="rotate(-12 185 156)"/></g>
+  <path d="M120 52 C176 52 196 96 196 142 C196 196 164 226 120 226 C76 226 44 196 44 142 C44 96 64 52 120 52 Z" fill="#FF6F61"/>
+  <ellipse cx="84" cy="156" rx="13" ry="9" fill="#FF9E8A" opacity=".55"/><ellipse cx="156" cy="156" rx="13" ry="9" fill="#FF9E8A" opacity=".55"/>
+  <rect x="78" y="104" width="26" height="7" rx="3.5" fill="#B23A2B" transform="rotate(-4 91 107)"/>
+  <rect x="136" y="104" width="26" height="7" rx="3.5" fill="#B23A2B" transform="rotate(4 149 107)"/>
+  <ellipse cx="91" cy="130" rx="15" ry="17" fill="#fff"/><ellipse cx="149" cy="130" rx="15" ry="17" fill="#fff"/>
+  <g class="pupilL"><circle cx="93" cy="132" r="7" fill="#23163B"/><circle cx="96" cy="129" r="2.4" fill="#fff"/></g>
+  <g class="pupilR"><circle cx="151" cy="132" r="7" fill="#23163B"/><circle cx="154" cy="129" r="2.4" fill="#fff"/></g>
+  <ellipse class="lidL" cx="91" cy="130" rx="16" ry="18" fill="#FF6F61"/>
+  <ellipse class="lidR" cx="149" cy="130" rx="16" ry="18" fill="#FF6F61"/>
+  <path class="mouth-smile" d="M101 176 Q120 194 139 176" stroke="#7A1E12" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <ellipse class="mouth-open" cx="120" cy="182" rx="12" ry="14" fill="#7A1E12"/>
+  <rect class="mouth-flat" x="106" y="178" width="28" height="6" rx="3" fill="#7A1E12"/>
+ </g>
+</svg>`,
+momo: `
+<svg class="rig char-momo" viewBox="0 0 240 240">
+ <defs><radialGradient id="rMomo" cx="42%" cy="32%" r="80%"><stop offset="0%" stop-color="#FF8A7B"/><stop offset="62%" stop-color="#FF6F61"/><stop offset="100%" stop-color="#EE5A49"/></radialGradient></defs>
+ <g class="breathe">
+  <path d="M126 66 C124 56 122 48 126 40" stroke="#E8533F" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <g class="sig-boing"><path d="M126 40 l5 11 11 5 -11 5 -5 11 -5 -11 -11 -5 11 -5 z" fill="#FFC24B"/></g>
+  <ellipse cx="120" cy="146" rx="80" ry="74" fill="url(#rMomo)"/>
+  <g class="armL"><ellipse cx="52" cy="158" rx="14" ry="11" fill="#FF8A7B"/></g>
+  <g class="armR"><ellipse cx="188" cy="158" rx="14" ry="11" fill="#FF8A7B"/></g>
+  <g class="pupilL"><circle cx="92" cy="142" r="11" fill="#2B1A3E"/><circle cx="96" cy="138" r="4" fill="#fff"/><circle cx="89" cy="145" r="1.8" fill="#fff" opacity=".8"/></g>
+  <g class="pupilR"><circle cx="148" cy="142" r="11" fill="#2B1A3E"/><circle cx="152" cy="138" r="4" fill="#fff"/><circle cx="145" cy="145" r="1.8" fill="#fff" opacity=".8"/></g>
+  <circle class="lidL" cx="92" cy="142" r="12.5" fill="#FF6F61"/><circle class="lidR" cx="148" cy="142" r="12.5" fill="#FF6F61"/>
+  <ellipse cx="74" cy="164" rx="12" ry="7.5" fill="#FF9E8A" opacity=".85"/><ellipse cx="166" cy="164" rx="12" ry="7.5" fill="#FF9E8A" opacity=".85"/>
+  <path class="mouth-smile" d="M112 162 Q120 170 128 162" stroke="#7A2A1C" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+  <ellipse class="mouth-open" cx="120" cy="167" rx="9" ry="10" fill="#7A2A1C"/>
+  <rect class="mouth-flat" x="109" y="162" width="22" height="5" rx="2.5" fill="#7A2A1C"/>
+  <ellipse cx="102" cy="219" rx="13" ry="7" fill="#EE5A49"/><ellipse cx="138" cy="219" rx="13" ry="7" fill="#EE5A49"/>
+ </g>
+</svg>`,
+pip: `
+<svg class="rig char-pip" viewBox="0 0 240 240">
+ <defs><radialGradient id="rPip" cx="45%" cy="30%" r="80%"><stop offset="0%" stop-color="#FF8A7B"/><stop offset="65%" stop-color="#FF6F61"/><stop offset="100%" stop-color="#E8533F"/></radialGradient></defs>
+ <g class="breathe">
+  <path d="M74 74 Q66 56 82 60 Q78 70 74 74 Z" fill="#E8533F"/><path d="M166 74 Q174 56 158 60 Q162 70 166 74 Z" fill="#E8533F"/>
+  <ellipse cx="120" cy="140" rx="82" ry="78" fill="url(#rPip)"/>
+  <ellipse cx="120" cy="176" rx="46" ry="34" fill="#F6ECD9" opacity=".92"/>
+  <g class="armL"><ellipse cx="46" cy="150" rx="13" ry="24" fill="#E8533F" transform="rotate(14 46 150)"/></g>
+  <g class="armR"><ellipse cx="194" cy="150" rx="13" ry="24" fill="#E8533F" transform="rotate(-14 194 150)"/></g>
+  <circle cx="92" cy="118" r="27" fill="#F6ECD9"/><circle cx="148" cy="118" r="27" fill="#F6ECD9"/>
+  <g class="pupilL"><circle cx="94" cy="121" r="12.5" fill="#2B1A3E"/><circle cx="99" cy="116" r="4.5" fill="#fff"/><circle cx="90" cy="125" r="2" fill="#fff" opacity=".8"/></g>
+  <g class="pupilR"><circle cx="146" cy="121" r="12.5" fill="#2B1A3E"/><circle cx="151" cy="116" r="4.5" fill="#fff"/><circle cx="142" cy="125" r="2" fill="#fff" opacity=".8"/></g>
+  <circle class="lidL" cx="92" cy="118" r="27.5" fill="#FF6F61"/><circle class="lidR" cx="148" cy="118" r="27.5" fill="#FF6F61"/>
+  <path class="mouth-smile" d="M113 142 L127 142 L120 154 Z" fill="#FFC24B"/>
+  <path class="mouth-open" d="M111 141 L129 141 L120 158 Z" fill="#FFC24B"/>
+  <path class="mouth-flat" d="M113 144 L127 144 L120 152 Z" fill="#E8A23B"/>
+  <ellipse cx="70" cy="152" rx="10" ry="6.5" fill="#FF9E8A" opacity=".9"/><ellipse cx="170" cy="152" rx="10" ry="6.5" fill="#FF9E8A" opacity=".9"/>
+  <ellipse cx="104" cy="218" rx="10" ry="6" fill="#FFC24B"/><ellipse cx="136" cy="218" rx="10" ry="6" fill="#FFC24B"/>
+ </g>
+</svg>`,
+lumi: `
+<svg class="rig char-lumi" viewBox="0 0 240 240">
+ <defs>
+  <radialGradient id="rLumi" cx="44%" cy="32%" r="78%"><stop offset="0%" stop-color="#FF8A7B"/><stop offset="62%" stop-color="#FF6F61"/><stop offset="100%" stop-color="#EE5A49"/></radialGradient>
+  <radialGradient id="rTail" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFE08A"/><stop offset="55%" stop-color="#FFC24B"/><stop offset="100%" stop-color="#FFC24B" stop-opacity="0"/></radialGradient>
+ </defs>
+ <g class="breathe">
+  <g class="sig-wingL"><ellipse cx="76" cy="88" rx="30" ry="18" fill="#F6ECD9" opacity=".5" transform="rotate(-24 76 88)"/></g>
+  <g class="sig-wingR"><ellipse cx="164" cy="88" rx="30" ry="18" fill="#F6ECD9" opacity=".5" transform="rotate(24 164 88)"/></g>
+  <path d="M106 66 Q98 46 88 42" stroke="#E8533F" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M134 66 Q142 46 152 42" stroke="#E8533F" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="88" cy="40" r="6" fill="#FFC24B"/><circle cx="152" cy="40" r="6" fill="#FFC24B"/>
+  <g class="sig-glow"><circle cx="120" cy="196" r="30" fill="url(#rTail)"/></g>
+  <ellipse cx="120" cy="134" rx="66" ry="62" fill="url(#rLumi)"/>
+  <ellipse cx="120" cy="182" rx="34" ry="22" fill="#FFC24B"/>
+  <g class="pupilL"><circle cx="98" cy="130" r="10.5" fill="#2B1A3E"/><circle cx="102" cy="126" r="4" fill="#fff"/><circle cx="95" cy="133" r="1.7" fill="#fff" opacity=".8"/></g>
+  <g class="pupilR"><circle cx="142" cy="130" r="10.5" fill="#2B1A3E"/><circle cx="146" cy="126" r="4" fill="#fff"/><circle cx="139" cy="133" r="1.7" fill="#fff" opacity=".8"/></g>
+  <circle class="lidL" cx="98" cy="130" r="12" fill="#FF6F61"/><circle class="lidR" cx="142" cy="130" r="12" fill="#FF6F61"/>
+  <ellipse cx="82" cy="150" rx="10.5" ry="6.5" fill="#FF9E8A" opacity=".9"/><ellipse cx="158" cy="150" rx="10.5" ry="6.5" fill="#FF9E8A" opacity=".9"/>
+  <path class="mouth-smile" d="M113 150 Q120 157 127 150" stroke="#7A2A1C" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <ellipse class="mouth-open" cx="120" cy="154" rx="8" ry="9" fill="#7A2A1C"/>
+  <rect class="mouth-flat" x="110" y="150" width="20" height="5" rx="2.5" fill="#7A2A1C"/>
+ </g>
+</svg>`,
+boo: `
+<svg class="rig char-boo" viewBox="0 0 240 240">
+ <defs><radialGradient id="rBoo" cx="45%" cy="28%" r="85%"><stop offset="0%" stop-color="#FFFDF6"/><stop offset="70%" stop-color="#F6ECD9"/><stop offset="100%" stop-color="#E9D9BC"/></radialGradient></defs>
+ <g>
+  <g class="sig-twinkle"><path d="M186 74 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4 z" fill="#FFC24B"/><path d="M186 60 v8 M186 86 v8 M172 74 h8 M198 74 h8" stroke="#FFE08A" stroke-width="2.4" stroke-linecap="round"/></g>
+  <path d="M176 96 L166 118" stroke="#C9A468" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M120 44 C168 44 186 84 186 128 L186 176 Q175 164 164 176 Q153 188 142 176 Q131 164 120 176 Q109 188 98 176 Q87 164 76 176 L54 176 L54 128 C54 84 72 44 120 44 Z" fill="url(#rBoo)"/>
+  <g class="armL"><ellipse cx="60" cy="128" rx="13" ry="9" fill="#F6ECD9" transform="rotate(24 60 128)"/></g>
+  <g class="armR"><ellipse cx="166" cy="120" rx="13" ry="9" fill="#F6ECD9" transform="rotate(-38 166 120)"/></g>
+  <g class="pupilL"><circle cx="98" cy="112" r="11" fill="#2B1A3E"/><circle cx="102" cy="108" r="4" fill="#fff"/><circle cx="95" cy="115" r="1.8" fill="#fff" opacity=".8"/></g>
+  <g class="pupilR"><circle cx="144" cy="112" r="11" fill="#2B1A3E"/><circle cx="148" cy="108" r="4" fill="#fff"/><circle cx="141" cy="115" r="1.8" fill="#fff" opacity=".8"/></g>
+  <circle class="lidL" cx="98" cy="112" r="12.5" fill="#F6ECD9"/><circle class="lidR" cx="144" cy="112" r="12.5" fill="#F6ECD9"/>
+  <ellipse cx="82" cy="132" rx="10" ry="6.5" fill="#FFB8A8" opacity=".95"/><ellipse cx="160" cy="132" rx="10" ry="6.5" fill="#FFB8A8" opacity=".95"/>
+  <g class="mouth-smile"><ellipse cx="121" cy="134" rx="7" ry="8.5" fill="#7A4A3A"/><ellipse cx="121" cy="138" rx="4.5" ry="4" fill="#FF9E8A"/></g>
+  <ellipse class="mouth-open" cx="121" cy="136" rx="9" ry="11" fill="#7A4A3A"/>
+  <rect class="mouth-flat" x="111" y="132" width="20" height="5" rx="2.5" fill="#7A4A3A"/>
+ </g>
+</svg>`,
+dizzy: `
+<svg class="rig char-dizzy" viewBox="0 0 240 240">
+ <defs>
+  <radialGradient id="rDiz" cx="40%" cy="30%" r="82%"><stop offset="0%" stop-color="#FFE08A"/><stop offset="60%" stop-color="#FFC24B"/><stop offset="100%" stop-color="#F2A93B"/></radialGradient>
+  <clipPath id="rDizClip"><circle cx="120" cy="128" r="72"/></clipPath>
+ </defs>
+ <g class="sig-orbit">
+  <path d="M120 30 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FF8A7B"/>
+  <path d="M206 150 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5 z" fill="#F6ECD9" opacity=".85"/>
+  <path d="M36 160 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5 z" fill="#FF6F61" opacity=".9"/>
+ </g>
+ <g class="breathe">
+  <path d="M120 40 L120 58" stroke="#B9A7C9" stroke-width="3.5"/>
+  <circle cx="120" cy="128" r="72" fill="url(#rDiz)"/>
+  <g clip-path="url(#rDizClip)" opacity=".22" stroke="#FFF6DC" stroke-width="2">
+   <path d="M48 100 H192 M48 128 H192 M48 156 H192" fill="none"/><path d="M92 56 V200 M120 56 V200 M148 56 V200" fill="none"/>
+  </g>
+  <g class="armL"><ellipse cx="46" cy="150" rx="12" ry="9" fill="#FF6F61"/></g>
+  <g class="armR"><ellipse cx="194" cy="150" rx="12" ry="9" fill="#FF6F61"/></g>
+  <g class="pupilL"><circle cx="96" cy="126" r="11" fill="#2B1A3E"/><circle cx="100" cy="122" r="4" fill="#fff"/><circle cx="93" cy="129" r="1.8" fill="#fff" opacity=".8"/></g>
+  <g class="pupilR"><circle cx="144" cy="126" r="11" fill="#2B1A3E"/><circle cx="148" cy="122" r="4" fill="#fff"/><circle cx="141" cy="129" r="1.8" fill="#fff" opacity=".8"/></g>
+  <circle class="lidL" cx="96" cy="126" r="12.5" fill="#FFC24B"/><circle class="lidR" cx="144" cy="126" r="12.5" fill="#FFC24B"/>
+  <ellipse cx="80" cy="146" rx="10.5" ry="6.5" fill="#FF9E8A" opacity=".95"/><ellipse cx="160" cy="146" rx="10.5" ry="6.5" fill="#FF9E8A" opacity=".95"/>
+  <path class="mouth-smile" d="M111 148 Q120 156 129 148" stroke="#8A5A16" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <ellipse class="mouth-open" cx="120" cy="152" rx="8" ry="9" fill="#8A5A16"/>
+  <rect class="mouth-flat" x="110" y="148" width="20" height="5" rx="2.5" fill="#8A5A16"/>
+ </g>
+</svg>`,
+koko: `
+<svg class="rig char-koko" viewBox="0 0 240 240">
+ <defs>
+  <radialGradient id="rKoko" cx="43%" cy="30%" r="80%"><stop offset="0%" stop-color="#FF8A7B"/><stop offset="62%" stop-color="#FF6F61"/><stop offset="100%" stop-color="#E8533F"/></radialGradient>
+  <radialGradient id="rKokoFace" cx="50%" cy="35%" r="75%"><stop offset="0%" stop-color="#FFFDF6"/><stop offset="100%" stop-color="#F6ECD9"/></radialGradient>
+ </defs>
+ <g class="breathe">
+  <g class="sig-tail"><path d="M166 190 C 202 184 216 152 200 134 C 190 123 174 128 176 142 C 177 151 186 153 190 147" stroke="#E8533F" stroke-width="9" fill="none" stroke-linecap="round"/></g>
+  <circle cx="40" cy="112" r="22" fill="url(#rKoko)"/><circle cx="42" cy="112" r="11" fill="#FFD9C4"/>
+  <circle cx="200" cy="112" r="22" fill="url(#rKoko)"/><circle cx="198" cy="112" r="11" fill="#FFD9C4"/>
+  <ellipse cx="120" cy="140" rx="80" ry="74" fill="url(#rKoko)"/>
+  <path d="M112 70 C 112 58 124 56 128 62" stroke="#C9412F" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M78 118 a26 26 0 0 1 84 0 l0 26 a42 34 0 0 1 -84 0 Z" fill="url(#rKokoFace)"/>
+  <g class="pupilL"><circle cx="98" cy="134" r="10.5" fill="#2B1A3E"/><circle cx="102" cy="130" r="4" fill="#fff"/><circle cx="95" cy="137" r="1.7" fill="#fff" opacity=".8"/></g>
+  <g class="pupilR"><circle cx="142" cy="134" r="10.5" fill="#2B1A3E"/><circle cx="146" cy="130" r="4" fill="#fff"/><circle cx="139" cy="137" r="1.7" fill="#fff" opacity=".8"/></g>
+  <circle class="lidL" cx="98" cy="134" r="12" fill="#F6ECD9"/><circle class="lidR" cx="142" cy="134" r="12" fill="#F6ECD9"/>
+  <ellipse cx="82" cy="154" rx="10" ry="6.5" fill="#FFB8A8" opacity=".95"/><ellipse cx="158" cy="154" rx="10" ry="6.5" fill="#FFB8A8" opacity=".95"/>
+  <circle cx="114" cy="153" r="2.6" fill="#8A4A3A"/><circle cx="126" cy="153" r="2.6" fill="#8A4A3A"/>
+  <path class="mouth-smile" d="M112 164 Q120 172 128 164" stroke="#7A4A3A" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <ellipse class="mouth-open" cx="120" cy="168" rx="8" ry="9" fill="#7A4A3A"/>
+  <rect class="mouth-flat" x="110" y="164" width="20" height="5" rx="2.5" fill="#7A4A3A"/>
+  <g class="armL"><ellipse cx="50" cy="164" rx="14" ry="11" fill="#FF8A7B"/></g>
+  <path d="M40 150 q-10 -12 2 -20 q12 -8 16 6 q-14 -4 -18 14 z" fill="#FFC24B" transform="rotate(-12 46 142)"/>
+  <g class="armR"><ellipse cx="190" cy="164" rx="14" ry="11" fill="#FF8A7B"/></g>
+  <ellipse cx="102" cy="212" rx="13" ry="7" fill="#EE5A49"/><ellipse cx="138" cy="212" rx="13" ry="7" fill="#EE5A49"/>
+ </g>
+</svg>`,
+};
+
+/* Mirror of the persona registry's sprite maps (services/character-engine/src/persona-registry.ts).
+   The caption shows exactly what the service tells the client to play. */
+const SPRITES = {
+  troublemaker:{idle:"bob",plotting:"rub-hands",tada:"confetti-jump",wink:"wink",thinking:"tap-chin",mischief:"eyebrow-wiggle",smug:"lean-back",cheer:"fist-pump"},
+  momo:{idle:"star-boing",plotting:"star-charge",tada:"confetti-pop",wink:"wink",thinking:"star-dim",mischief:"waddle-wiggle",smug:"chin-up",cheer:"double-bounce"},
+  pip:{idle:"slow-blink",plotting:"head-tilt",tada:"wing-flap",wink:"one-eye",thinking:"wide-eyes",mischief:"sideways-look",smug:"feather-fluff",cheer:"hoot-bounce"},
+  lumi:{idle:"glow-pulse",plotting:"glow-flicker",tada:"full-shine",wink:"wink",thinking:"dim-hover",mischief:"zigzag-dart",smug:"steady-glow",cheer:"light-burst"},
+  boo:{idle:"float",plotting:"peek-around",tada:"sparkler-wave",wink:"wink",thinking:"hover-tilt",mischief:"vanish-reappear",smug:"slow-spin",cheer:"loop-de-loop"},
+  dizzy:{idle:"sparkle-orbit",plotting:"slow-spin",tada:"strobe-burst",wink:"facet-flash",thinking:"dim-spin",mischief:"wobble",smug:"shine-on",cheer:"spin-up"},
+  koko:{idle:"tail-sway",plotting:"tail-question",tada:"banana-toss",wink:"wink",thinking:"head-scratch",mischief:"ear-waggle",smug:"arms-crossed",cheer:"swing-jump"},
+};
+const NAMES = {troublemaker:"Sparky",momo:"Momo",pip:"Pip",lumi:"Lumi",boo:"Boo",dizzy:"Dizzy",koko:"Koko"};
+const MOODS = ["idle","plotting","tada","wink","thinking","mischief","smug","cheer"];
+
+const stage=document.getElementById("stage"), picker=document.getElementById("picker"),
+      moods=document.getElementById("moods"), caption=document.getElementById("caption"),
+      fx=document.getElementById("fx"), nightline=document.getElementById("nightline");
+
+let currentChar="momo", currentMood="idle", nightTimer=null;
+
+/* build stage rigs + picker thumbs (same rig, small) */
+for (const id of Object.keys(RIGS)){
+  stage.insertAdjacentHTML("beforeend", RIGS[id]);
+  const b=document.createElement("button"); b.className="pick"; b.dataset.id=id;
+  b.innerHTML = RIGS[id].replace('class="rig','class="thumb') + `<div class="nm">${NAMES[id]}</div>`;
+  b.onclick=()=>setChar(id);
+  picker.appendChild(b);
+}
+/* confetti pieces */
+const CONF=["#FF6F61","#FFC24B","#F6ECD9","#FF8A7B"];
+for(let i=0;i<16;i++){const c=document.createElement("div");c.className="confetti";
+  c.style.left=(20+Math.random()*60)+"%"; c.style.background=CONF[i%4];
+  c.style.setProperty("--dx",(Math.random()*160-80)+"px"); c.style.animationDelay=(Math.random()*0.9)+"s";
+  fx.appendChild(c);}
+
+/* mood buttons */
+for(const m of MOODS){const b=document.createElement("button");b.className="mood";b.textContent=m;b.dataset.m=m;
+  b.onclick=()=>{stopNight();setMood(m)};moods.appendChild(b);}
+
+function setChar(id){
+  currentChar=id;
+  document.querySelectorAll(".rig").forEach(r=>r.classList.toggle("show", r.classList.contains("char-"+id)));
+  document.querySelectorAll(".pick").forEach(p=>p.classList.toggle("on", p.dataset.id===id));
+  setMood(currentMood);
+}
+function setMood(m){
+  currentMood=m;
+  const wrap=document.querySelector(".stagewrap");
+  wrap.className="stagewrap m-"+m;
+  document.querySelectorAll(".mood").forEach(b=>b.classList.toggle("on", b.dataset.m===m));
+  caption.innerHTML=`persona <code>${currentChar}</code> · mood <code>${m}</code> → plays <code>${SPRITES[currentChar][m]}</code>`;
+}
+const NIGHT=[["idle","A quiet Thursday. Someone types “we doing something Saturday?”"],
+  ["plotting","Spark received. ${n} is cooking three plans…"],
+  ["thinking","The crew is voting. ${n} reads the room."],
+  ["tada","It’s a tie — the Wheel spins — WE HAVE A WINNER!"],
+  ["cheer","Everybody’s in. Out the door. ${n} did it again."]];
+document.getElementById("playNight").onclick=()=>{
+  stopNight(); let i=0;
+  const step=()=>{ if(i>=NIGHT.length){nightline.textContent="";return;}
+    const [m,line]=NIGHT[i++]; setMood(m);
+    nightline.textContent=line.replaceAll("${n}",NAMES[currentChar]);
+    nightTimer=setTimeout(step, 2600); };
+  step();
+};
+function stopNight(){ if(nightTimer){clearTimeout(nightTimer);nightTimer=null;nightline.textContent="";} }
+
+setChar("momo");
+</script>
+</body>
+</html>
