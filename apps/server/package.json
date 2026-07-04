@@ -1,0 +1,11 @@
+{ "name": "@funtog/server", "version": "0.0.0", "main": "src/index.ts",
+  "scripts": {
+    "start": "node --import tsx src/index.ts",
+    "test": "node --import tsx --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@funtog/contracts": "*",
+    "@funtog/suggestion-engine": "*",
+    "@funtog/venue-knowledge": "*",
+    "tsx": "^4.16.0"
+  } }
