@@ -63,7 +63,11 @@ jobs:
         run: |
           docker run -d --name funtog -p 3000:3000 ${{ env.IMAGE }}:latest
           for i in $(seq 1 15); do
-            if curl -fsS http://127.0.0.1:3000/healthz; then exit 0; fi
+            if curl -fsS http://127.0.0.1:3000/healthz; then healthy=1; break; fi
             sleep 2
           done
-          echo "server never became healthy"; docker logs funtog; exit 1
+          if [ -z "$healthy" ]; then echo "server never became healthy"; docker logs funtog; exit 1; fi
+          # main functionality: the plans API must return non-empty plan candidates
+          plans=$(curl -fsS "http://127.0.0.1:3000/api/plans?vibe=smoke%20test" | python3 -c "import json,sys; print(len(json.load(sys.stdin)['plans']))")
+          echo "plans returned: $plans"
+          [ "$plans" -ge 1 ] || { echo "plans API returned no plans"; docker logs funtog; exit 1; }

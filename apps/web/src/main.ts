@@ -3,6 +3,12 @@ import { createSuggestion } from "@funtog/suggestion-engine";
 import { createVenue } from "@funtog/venue-knowledge";
 import type { PlanCandidate, PlanStop } from "@funtog/contracts";
 
+// suggestion-engine clones plans with structuredClone (missing on pre-2022 browsers);
+// its plan objects are plain JSON data, so this fallback is lossless
+if (typeof globalThis.structuredClone !== "function") {
+  globalThis.structuredClone = (<T,>(x: T): T => JSON.parse(JSON.stringify(x))) as typeof structuredClone;
+}
+
 const suggestion = createSuggestion({ venue: createVenue() });
 
 const form = document.getElementById("form") as HTMLFormElement;

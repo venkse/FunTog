@@ -36,3 +36,10 @@ jobs:
           git add -A
           git commit -m "deploy ${GITHUB_SHA::7}"
           git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Post-deploy checkout suite (live site)
+        env:
+          BASE_URL: https://venkse.github.io/FunTog
+          EXPECT_COMMIT: ${{ github.sha }}
+        run: node apps/web/postdeploy.mjs
