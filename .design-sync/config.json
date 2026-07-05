@@ -1,0 +1,13 @@
+{
+  "pkg": "@funtog/design-system",
+  "globalName": "FunTogDS",
+  "shape": "package",
+  "buildCmd": "npm run build --workspace @funtog/design-system",
+  "cssEntry": "dist/styles.css",
+  "readmeHeader": ".design-sync/conventions.md",
+  "tokensGlob": "src/tokens.css",
+  "overrides": {
+    "PlanCard": { "cardMode": "column" },
+    "StopRow": { "cardMode": "column" }
+  }
+}
