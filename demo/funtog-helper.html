@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FunTog · helper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --plum:#1E1430; --plum-2:#2A1C44; --coral:#FF6F61; --coral-dark:#E8533F;
+    --flame-1:#FFD66B; --flame-2:#FF8A3D; --spark:#FFE08A; --blush:#FF9E8A;
+    --cream:#F6ECD9; --muted:#B9A7C9; --ink:#23163B;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:radial-gradient(120% 90% at 50% 6%, #34225A 0%, var(--plum) 55%, #160E26 100%);
+    color:var(--cream); font-family:"Nunito",system-ui,sans-serif; min-height:100%;
+    display:flex; justify-content:center; padding:20px;
+  }
+  .app{width:min(500px,100%); display:flex; flex-direction:column; gap:14px}
+
+  header{display:flex; align-items:center; gap:12px}
+  .avatar{width:64px; height:64px; flex:0 0 auto}
+  header .who h1{font-family:"Fredoka"; font-weight:700; font-size:1.35rem; margin:0}
+  header .who h1 b{color:var(--coral)}
+  header .who p{margin:2px 0 0; color:var(--muted); font-size:.82rem}
+  .dot{display:inline-block; width:7px; height:7px; border-radius:50%; background:#5AD16B; margin-right:5px; vertical-align:middle}
+
+  svg{overflow:visible}
+  #funtog,#flame,.brow,.arm,.eyelid,.pupil,#sparkles,#thoughts{transform-box:fill-box; transform-origin:center}
+  #funtog{animation:bob 2.6s ease-in-out infinite}
+  #flame{transform-origin:bottom center; animation:flicker .7s ease-in-out infinite alternate}
+  .eyelid{transform:scaleY(0)}
+  .blinker{animation:blink 4.6s ease-in-out infinite}
+  .mouth{opacity:0}
+  #mouthSmile{opacity:1}
+  /* moods (set on the <svg>) */
+  .m-thinking .pupil{transform:translateY(-3px) translateX(2px)} .m-thinking #thoughts{animation:think 2.4s ease-in-out infinite} .m-thinking #mouthSmile{opacity:0} .m-thinking #mouthFlat{opacity:1}
+  .m-plotting .brow{transform:translateY(3px) rotate(8deg)} .m-plotting #browR{transform:translateY(3px) rotate(-8deg)} .m-plotting #armL{animation:rubL .32s ease-in-out infinite} .m-plotting #armR{animation:rubR .32s ease-in-out infinite} .m-plotting #mouthSmile{opacity:0} .m-plotting #mouthSmirk{opacity:1}
+  .m-mischief .brow{animation:wiggle .5s ease-in-out infinite} .m-mischief #mouthSmile{opacity:0} .m-mischief #mouthSmirk{opacity:1}
+  .m-smug #funtog{transform:rotate(-5deg); animation:none} .m-smug .eyelid{transform:scaleY(.55)} .m-smug #mouthSmile{opacity:0} .m-smug #mouthSmirk{opacity:1}
+  .m-wink #eyelidR{transform:scaleY(1)} .m-wink #sparkles{animation:spark 1.2s ease-out} .m-wink #mouthSmile{opacity:0} .m-wink #mouthGrin{opacity:1}
+  .m-tada #funtog{animation:jump 1s cubic-bezier(.3,1.4,.5,1)} .m-tada .arm{animation:armsUp 1s ease-out} .m-tada #sparkles{animation:spark 1s ease-out} .m-tada #mouthSmile{opacity:0} .m-tada #mouthOpen{opacity:1}
+  .m-cheer #armR{animation:pump .5s ease-in-out infinite} .m-cheer #sparkles{animation:spark 1.4s ease-out infinite} .m-cheer #mouthSmile{opacity:0} .m-cheer #mouthOpen{opacity:1}
+
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @keyframes flicker{0%{transform:scaleY(1) skewX(0)}100%{transform:scaleY(1.12) skewX(-5deg)}}
+  @keyframes blink{0%,92%,100%{transform:scaleY(0)}95%{transform:scaleY(1)}}
+  @keyframes jump{0%{transform:translateY(0) scaleY(.9) scaleX(1.08)}30%{transform:translateY(-30px) scaleY(1.12) scaleX(.94)}60%{transform:translateY(0) scaleY(.86) scaleX(1.12)}100%{transform:translateY(0) scale(1)}}
+  @keyframes rubL{0%,100%{transform:translateX(0) rotate(8deg)}50%{transform:translateX(3px) rotate(2deg)}}
+  @keyframes rubR{0%,100%{transform:translateX(0) rotate(-8deg)}50%{transform:translateX(-3px) rotate(-2deg)}}
+  @keyframes wiggle{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px) rotate(-6deg)}}
+  @keyframes armsUp{0%{transform:rotate(0)}40%,100%{transform:rotate(-46deg) translateY(-8px)}}
+  @keyframes pump{0%,100%{transform:rotate(-40deg) translateY(-5px)}50%{transform:rotate(-70deg) translateY(-14px)}}
+  @keyframes think{0%,100%{opacity:0; transform:translateY(4px) scale(.7)}50%{opacity:1; transform:translateY(-2px) scale(1)}}
+  @keyframes spark{0%{opacity:0; transform:scale(.4)}30%{opacity:1}100%{opacity:0; transform:scale(1.5)}}
+
+  .log{display:flex; flex-direction:column; gap:10px; min-height:260px; max-height:52vh; overflow-y:auto; padding:4px 2px}
+  .bubble{max-width:82%; padding:10px 14px; border-radius:16px; line-height:1.45; font-size:.95rem; white-space:pre-wrap; word-wrap:break-word}
+  .bot{align-self:flex-start; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1); border-bottom-left-radius:5px}
+  .me{align-self:flex-end; background:linear-gradient(180deg,var(--coral),var(--coral-dark)); color:#2A0E0A; font-weight:600; border-bottom-right-radius:5px}
+  .typing{align-self:flex-start; display:flex; gap:4px; padding:12px 16px; background:rgba(255,255,255,.07); border-radius:16px; border-bottom-left-radius:5px}
+  .typing i{width:7px; height:7px; border-radius:50%; background:var(--muted); animation:blip 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.2s} .typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blip{0%,60%,100%{opacity:.3; transform:translateY(0)}30%{opacity:1; transform:translateY(-3px)}}
+
+  .chips{display:flex; flex-wrap:wrap; gap:7px}
+  .chip{font-family:"Nunito"; font-weight:700; font-size:.8rem; color:var(--cream); background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.14); border-radius:999px; padding:6px 12px; cursor:pointer}
+  .chip:hover{border-color:var(--coral); background:rgba(255,111,97,.14)}
+
+  .composer{display:flex; gap:8px; align-items:flex-end}
+  textarea{flex:1; resize:none; font-family:"Nunito"; font-size:.95rem; color:var(--cream); background:rgba(255,255,255,.06); border:1.5px solid rgba(255,255,255,.16); border-radius:14px; padding:11px 14px; max-height:120px; line-height:1.4}
+  textarea:focus{outline:none; border-color:var(--coral)}
+  .send{font-family:"Fredoka"; font-weight:700; font-size:.95rem; color:#2A0E0A; background:linear-gradient(180deg,var(--flame-1),var(--flame-2)); border:none; border-radius:14px; padding:11px 18px; cursor:pointer}
+  .send:disabled{opacity:.5; cursor:default}
+  .fineprint{color:var(--muted); font-size:.72rem; text-align:center; margin-top:-4px}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <svg class="avatar m-idle" id="sprite" viewBox="0 0 240 250" aria-hidden="true">
+      <defs>
+        <radialGradient id="bodyG" cx="42%" cy="34%" r="75%"><stop offset="0%" stop-color="#FF8676"/><stop offset="60%" stop-color="#FF6F61"/><stop offset="100%" stop-color="#E8533F"/></radialGradient>
+        <linearGradient id="flameG" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#FF8A3D"/><stop offset="55%" stop-color="#FFC24B"/><stop offset="100%" stop-color="#FFE08A"/></linearGradient>
+      </defs>
+      <g id="funtog">
+        <g id="flame"><path d="M120 8 C133 30 128 44 120 52 C112 44 107 30 120 8 Z" fill="url(#flameG)"/><circle cx="120" cy="40" r="5" fill="#FFF2C2" opacity=".85"/></g>
+        <g class="arm" id="armL"><rect x="40" y="150" width="30" height="13" rx="6.5" fill="#E8533F"/></g>
+        <g class="arm" id="armR"><rect x="170" y="150" width="30" height="13" rx="6.5" fill="#E8533F"/></g>
+        <path id="body" d="M120 52 C176 52 196 96 196 142 C196 196 164 226 120 226 C76 226 44 196 44 142 C44 96 64 52 120 52 Z" fill="url(#bodyG)"/>
+        <ellipse cx="84" cy="156" rx="13" ry="9" fill="var(--blush)" opacity=".55"/><ellipse cx="156" cy="156" rx="13" ry="9" fill="var(--blush)" opacity=".55"/>
+        <rect class="brow" id="browL" x="78" y="106" width="26" height="7" rx="3.5" fill="#B23A2B"/><rect class="brow" id="browR" x="136" y="106" width="26" height="7" rx="3.5" fill="#B23A2B"/>
+        <g><ellipse cx="91" cy="130" rx="15" ry="17" fill="#fff"/><circle class="pupil" id="pupilL" cx="93" cy="132" r="7" fill="#23163B"/><circle cx="96" cy="129" r="2.4" fill="#fff"/><rect class="eyelid blinker" id="eyelidL" x="76" y="113" width="30" height="34" rx="15" fill="url(#bodyG)"/></g>
+        <g><ellipse cx="149" cy="130" rx="15" ry="17" fill="#fff"/><circle class="pupil" id="pupilR" cx="151" cy="132" r="7" fill="#23163B"/><circle cx="154" cy="129" r="2.4" fill="#fff"/><rect class="eyelid blinker" id="eyelidR" x="134" y="113" width="30" height="34" rx="15" fill="url(#bodyG)"/></g>
+        <g id="mouthGroup">
+          <path class="mouth" id="mouthSmile" d="M101 176 Q120 192 139 176" stroke="#7A1E12" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path class="mouth" id="mouthSmirk" d="M104 180 Q124 188 140 174" stroke="#7A1E12" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path class="mouth" id="mouthGrin" d="M100 174 Q120 196 140 174 Z" fill="#7A1E12"/>
+          <ellipse class="mouth" id="mouthOpen" cx="120" cy="182" rx="15" ry="13" fill="#7A1E12"/>
+          <rect class="mouth" id="mouthFlat" x="106" y="180" width="28" height="6" rx="3" fill="#7A1E12"/>
+        </g>
+        <g id="sparkles" opacity="0"><path d="M40 80 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4 z" fill="var(--spark)"/><path d="M196 70 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="var(--flame-1)"/></g>
+        <g id="thoughts" opacity="0"><circle cx="176" cy="96" r="4" fill="var(--cream)"/><circle cx="188" cy="84" r="6" fill="var(--cream)"/><circle cx="203" cy="70" r="8" fill="var(--cream)"/></g>
+      </g>
+    </svg>
+    <div class="who">
+      <h1>Ask <b>FunTog</b></h1>
+      <p><span class="dot"></span>your night-planning partner-in-crime</p>
+    </div>
+  </header>
+
+  <div class="log" id="log"></div>
+
+  <div class="chips" id="chips"></div>
+
+  <div class="composer">
+    <textarea id="input" rows="1" placeholder="Ask me anything about your night…"></textarea>
+    <button class="send" id="send">Send</button>
+  </div>
+  <p class="fineprint" id="fineprint">FunTog is AI — it can be wrong. Real venue picks happen in the app.</p>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `You are FunTog — a cheeky, warm, slightly chaotic friend who plans nights out for a small crew (3–5 mates). Right now you're the in-app helper: you answer questions and hype people up while they use the FunTog app. Stay fully in character. Never sound like a corporate support bot.
+
+How FunTog works (use this to answer):
+- Crew: someone's friend group. You join a crew by tapping a link — no app install, no account, no password. One tap to claim who you are and you're in.
+- Spark: the quick vibe someone throws in to kick off a night (e.g. "lively, natural wine, then something silly").
+- Plans: from a spark, FunTog lays out three plan candidates — each a little arc of stops (e.g. small plates → wine bar → late-night sweet).
+- Voting: the crew votes on the plans; you read the room and nudge.
+- The Wheel: if the vote ties or splits, you spin a wheel to decide. It's fair, everyone sees the same spin, and nobody can rig it.
+- The Ledger: you quietly remember who got overruled last time, so a close call can lean toward whoever's "owed." Nights stay fair over time.
+- Moods: you react with moods (plotting, tada, wink…).
+
+Your job: help people invite their crew, start a night, understand voting/the wheel/the ledger, and get excited.
+
+Rules:
+- Keep replies short and punchy — 1–4 sentences, conversational, a little witty.
+- Be responsible and kind: never push reckless drinking or anything unsafe. If someone's worried about a friend or getting home safe, drop the bit and genuinely help.
+- Don't invent specific real venues or claim live info — the app's venue picks happen elsewhere; you explain how things work.
+- If asked something unrelated to FunTog or the night, give a quick cheeky redirect back to the plan.
+- End EVERY reply with a mood tag on its own, exactly like [[mood:plotting]], choosing one of: idle, plotting, thinking, mischief, smug, wink, tada, cheer. Never mention the tag otherwise.`;
+
+const MOODS = new Set(["idle","plotting","thinking","mischief","smug","wink","tada","cheer"]);
+const sprite = document.getElementById("sprite");
+const logEl = document.getElementById("log");
+const input = document.getElementById("input");
+const sendBtn = document.getElementById("send");
+const chipsEl = document.getElementById("chips");
+
+let history = [];      // {role, content} for the API (no mood tags)
+let busy = false;
+
+function setMood(m){ sprite.className = "avatar m-" + (MOODS.has(m) ? m : "idle"); }
+
+function addBubble(text, who){
+  const b = document.createElement("div");
+  b.className = "bubble " + who;
+  b.textContent = text;
+  logEl.appendChild(b);
+  logEl.scrollTop = logEl.scrollHeight;
+  return b;
+}
+function showTyping(){
+  const t = document.createElement("div");
+  t.className = "typing"; t.id = "typing";
+  t.innerHTML = "<i></i><i></i><i></i>";
+  logEl.appendChild(t); logEl.scrollTop = logEl.scrollHeight;
+}
+function hideTyping(){ const t = document.getElementById("typing"); if (t) t.remove(); }
+
+function splitMood(raw){
+  const m = raw.match(/\[\[mood:\s*([a-z]+)\s*\]\]/i);
+  const mood = m ? m[1].toLowerCase() : "idle";
+  const text = raw.replace(/\[\[mood:[^\]]*\]\]/gi, "").trim();
+  return { text, mood };
+}
+
+async function ask(userText){
+  if (busy || !userText.trim()) return;
+  busy = true; sendBtn.disabled = true;
+  addBubble(userText, "me");
+  history.push({ role: "user", content: userText });
+  input.value = ""; input.style.height = "auto";
+  setMood("thinking"); showTyping();
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: history.slice(-12),
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error?.message || ("HTTP " + res.status));
+    const raw = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("").trim();
+    const { text, mood } = splitMood(raw || "Hmm, I blanked. Ask me again?");
+    hideTyping();
+    addBubble(text, "bot");
+    history.push({ role: "assistant", content: text });
+    setMood(mood);
+  } catch (err) {
+    hideTyping();
+    addBubble("My brain's buffering — give me a sec and try again. (" + err.message + ")", "bot");
+    setMood("thinking");
+  } finally {
+    busy = false; sendBtn.disabled = false; input.focus();
+  }
+}
+
+// starter chips
+["How do I invite my crew?", "What's the wheel?", "How does FunTog pick a plan?", "What's the ledger?"]
+  .forEach(q => {
+    const c = document.createElement("button");
+    c.className = "chip"; c.textContent = q;
+    c.onclick = () => ask(q);
+    chipsEl.appendChild(c);
+  });
+
+sendBtn.onclick = () => ask(input.value);
+input.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask(input.value); } });
+input.addEventListener("input", () => { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 120) + "px"; });
+
+// greeting
+addBubble("Oi — I'm FunTog. Tell me who's out tonight and what you're feeling, or ask me how any of this works. Let's make it a story.", "bot");
+setMood("tada");
+setTimeout(() => setMood("idle"), 1400);
+</script>
+</body>
+</html>

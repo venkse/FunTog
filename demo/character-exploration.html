@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FunTog — Cuter Character Lineup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14091F; --bg2:#1E1430; --card:#2A1C44; --card2:#362356;
+    --coral:#FF6F61; --coralD:#E8533F; --gold:#FFC24B; --cream:#F6ECD9;
+    --muted:#B9A7C9; --ink:#23163B;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{
+    background:radial-gradient(1200px 600px at 50% -10%, #2A1640 0%, var(--bg) 60%);
+    color:var(--cream); font-family:'Nunito',sans-serif; min-height:100vh; padding:48px 24px 64px;
+  }
+  .wrap{max-width:1180px; margin:0 auto}
+  .kicker{font-family:'Fredoka'; font-weight:600; font-size:13px; letter-spacing:.28em; color:var(--coral); text-transform:uppercase}
+  h1{font-family:'Fredoka'; font-weight:700; font-size:clamp(30px,4.5vw,46px); line-height:1.08; margin:10px 0 14px}
+  .thesis{color:var(--muted); font-size:16.5px; max-width:760px; line-height:1.55}
+  .thesis b{color:var(--cream)}
+
+  .hero{display:flex; gap:28px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:40px}
+  .current{
+    background:var(--card); border-radius:20px; padding:16px 20px; display:flex; align-items:center; gap:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  .current svg{width:64px; height:66px}
+  .current .lbl{font-size:12px; color:var(--muted); letter-spacing:.14em; text-transform:uppercase}
+  .current .nm{font-family:'Fredoka'; font-weight:600; font-size:16px}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:22px}
+  .card{
+    background:linear-gradient(180deg,var(--card) 0%, #241740 100%);
+    border-radius:24px; padding:24px 22px 22px; box-shadow:0 12px 34px rgba(0,0,0,.38);
+    display:flex; flex-direction:column;
+  }
+  .stage{
+    background:radial-gradient(240px 200px at 50% 42%, rgba(255,111,97,.14), rgba(0,0,0,0) 70%);
+    border-radius:18px; display:flex; align-items:center; justify-content:center; padding:6px 0 2px;
+  }
+  .stage svg{width:200px; height:205px; overflow:visible}
+  .tag{
+    align-self:flex-start; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+    padding:4px 10px; border-radius:999px; margin-bottom:6px;
+  }
+  .tag.evo{background:var(--gold); color:var(--ink)}
+  .tag.fresh{background:var(--coral); color:var(--ink)}
+  .tag.swing{background:var(--card2); color:var(--muted); border:1px solid #4A3570}
+  h2{font-family:'Fredoka'; font-weight:600; font-size:24px; margin:10px 0 2px}
+  .species{color:var(--gold); font-size:13.5px; font-weight:700; margin-bottom:10px}
+  .voice{font-style:italic; color:var(--cream); font-size:14.5px; line-height:1.45; margin-bottom:12px}
+  .why{color:var(--muted); font-size:13.5px; line-height:1.55}
+  .why b{color:var(--cream); font-weight:700}
+  .keeps{margin-top:auto; padding-top:14px; font-size:12.5px; color:var(--muted)}
+  .keeps span{color:var(--gold); font-weight:700}
+
+  footer{margin-top:44px; color:var(--muted); font-size:13.5px; line-height:1.6; max-width:820px}
+  footer b{color:var(--cream)}
+
+  /* ---------- character motion (one signature move each) ---------- */
+  .boing{animation:boing 2.6s ease-in-out infinite; transform-origin:126px 40px}
+  @keyframes boing{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}
+  .bob{animation:bob 3.2s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .lids{animation:blink 4.2s infinite; transform-origin:center 118px}
+  @keyframes blink{0%,94%,100%{transform:scaleY(0)}96%{transform:scaleY(1)}}
+  .glow{animation:glow 2.2s ease-in-out infinite; transform-origin:120px 196px}
+  @keyframes glow{0%,100%{opacity:.55; transform:scale(1)}50%{opacity:1; transform:scale(1.18)}}
+  .wingL{animation:flapL 1.1s ease-in-out infinite; transform-origin:86px 96px}
+  .wingR{animation:flapR 1.1s ease-in-out infinite; transform-origin:154px 96px}
+  @keyframes flapL{0%,100%{transform:rotate(6deg)}50%{transform:rotate(-14deg)}}
+  @keyframes flapR{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(14deg)}}
+  .float{animation:floaty 3.6s ease-in-out infinite}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .twinkle{animation:twinkle 1.4s ease-in-out infinite; transform-origin:186px 74px}
+  @keyframes twinkle{0%,100%{opacity:.5; transform:scale(.8) rotate(0deg)}50%{opacity:1; transform:scale(1.25) rotate(24deg)}}
+  .orbit{animation:orbit 16s linear infinite; transform-origin:120px 128px}
+  @keyframes orbit{to{transform:rotate(360deg)}}
+  .sway{animation:sway 2.8s ease-in-out infinite; transform-origin:166px 190px}
+  @keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(7deg)}}
+  @media (prefers-reduced-motion: reduce){
+    .boing,.bob,.lids,.glow,.wingL,.wingR,.float,.twinkle,.orbit,.sway{animation:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <div class="kicker">Character exploration</div>
+      <h1>Same spark. Softer everything.</h1>
+      <p class="thesis">Cuteness is mostly <b>baby-schema</b>: bigger head, huge eyes set low on the face,
+      a tiny mouth, permanent blush, stubby (or no) limbs, and one gently bouncing feature. The current imp's
+      flame, eyebrows and smirk read <b>mischievous</b> — these six keep the mischief in the <i>writing</i>
+      and put the cute in the <i>body</i>.</p>
+    </div>
+    <div class="current">
+      <svg viewBox="0 0 240 250">
+        <path d="M120 8 C133 30 128 44 120 52 C112 44 107 30 120 8 Z" fill="#FFC24B"/>
+        <path d="M120 52 C176 52 196 96 196 142 C196 196 164 226 120 226 C76 226 44 196 44 142 C44 96 64 52 120 52 Z" fill="#FF6F61"/>
+        <rect x="78" y="104" width="26" height="7" rx="3.5" fill="#B23A2B" transform="rotate(-4 91 107)"/>
+        <rect x="136" y="104" width="26" height="7" rx="3.5" fill="#B23A2B" transform="rotate(4 149 107)"/>
+        <ellipse cx="91" cy="130" rx="15" ry="17" fill="#fff"/><circle cx="93" cy="132" r="7" fill="#23163B"/>
+        <ellipse cx="149" cy="130" rx="15" ry="17" fill="#fff"/><circle cx="151" cy="132" r="7" fill="#23163B"/>
+        <path d="M101 176 Q120 194 139 176" stroke="#7A1E12" stroke-width="6" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div><div class="lbl">For reference</div><div class="nm">Current FunTog</div></div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- ======================= 1 · MOMO ======================= -->
+    <div class="card">
+      <div class="stage"><svg viewBox="0 0 240 240">
+        <defs>
+          <radialGradient id="momoG" cx="42%" cy="32%" r="80%">
+            <stop offset="0%" stop-color="#FF8A7B"/><stop offset="62%" stop-color="#FF6F61"/><stop offset="100%" stop-color="#EE5A49"/>
+          </radialGradient>
+        </defs>
+        <g class="bob">
+          <path d="M126 66 C124 56 122 48 126 40" stroke="#E8533F" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <g class="boing"><path d="M126 40 l5 11 11 5 -11 5 -5 11 -5 -11 -11 -5 11 -5 z" fill="#FFC24B"/></g>
+          <ellipse cx="120" cy="146" rx="80" ry="74" fill="url(#momoG)"/>
+          <ellipse cx="52" cy="158" rx="14" ry="11" fill="#FF8A7B"/>
+          <ellipse cx="188" cy="158" rx="14" ry="11" fill="#FF8A7B"/>
+          <circle cx="92" cy="142" r="11" fill="#2B1A3E"/><circle cx="96" cy="138" r="4" fill="#fff"/><circle cx="89" cy="145" r="1.8" fill="#fff" opacity=".8"/>
+          <circle cx="148" cy="142" r="11" fill="#2B1A3E"/><circle cx="152" cy="138" r="4" fill="#fff"/><circle cx="145" cy="145" r="1.8" fill="#fff" opacity=".8"/>
+          <ellipse cx="74" cy="164" rx="12" ry="7.5" fill="#FF9E8A" opacity=".85"/>
+          <ellipse cx="166" cy="164" rx="12" ry="7.5" fill="#FF9E8A" opacity=".85"/>
+          <path d="M112 162 Q120 170 128 162" stroke="#7A2A1C" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="102" cy="219" rx="13" ry="7" fill="#EE5A49"/>
+          <ellipse cx="138" cy="219" rx="13" ry="7" fill="#EE5A49"/>
+        </g>
+      </svg></div>
+      <span class="tag evo">Closest evolution</span>
+      <h2>Momo</h2>
+      <div class="species">the spark dumpling</div>
+      <p class="voice">"Okay okay okay I found THREE plans and one of them has karaoke."</p>
+      <p class="why">The current imp, re-tuned: chubbier, eyes <b>bigger and lower</b>, brows gone, mouth tiny,
+      blush always on — and the flame becomes a <b>boingy star antenna</b>, so the "spark" survives without the fire.</p>
+      <p class="keeps">Keeps: <span>the coral blob, the spark story, every existing asset's silhouette</span></p>
+    </div>
+
+    <!-- ======================= 2 · PIP ======================= -->
+    <div class="card">
+      <div class="stage"><svg viewBox="0 0 240 240">
+        <defs>
+          <radialGradient id="pipG" cx="45%" cy="30%" r="80%">
+            <stop offset="0%" stop-color="#FF8A7B"/><stop offset="65%" stop-color="#FF6F61"/><stop offset="100%" stop-color="#E8533F"/>
+          </radialGradient>
+        </defs>
+        <g class="bob" style="animation-delay:.4s">
+          <path d="M74 74 Q66 56 82 60 Q78 70 74 74 Z" fill="#E8533F"/>
+          <path d="M166 74 Q174 56 158 60 Q162 70 166 74 Z" fill="#E8533F"/>
+          <ellipse cx="120" cy="140" rx="82" ry="78" fill="url(#pipG)"/>
+          <ellipse cx="120" cy="176" rx="46" ry="34" fill="#F6ECD9" opacity=".92"/>
+          <ellipse cx="46" cy="150" rx="13" ry="24" fill="#E8533F" transform="rotate(14 46 150)"/>
+          <ellipse cx="194" cy="150" rx="13" ry="24" fill="#E8533F" transform="rotate(-14 194 150)"/>
+          <circle cx="92" cy="118" r="27" fill="#F6ECD9"/>
+          <circle cx="148" cy="118" r="27" fill="#F6ECD9"/>
+          <circle cx="94" cy="121" r="12.5" fill="#2B1A3E"/><circle cx="99" cy="116" r="4.5" fill="#fff"/><circle cx="90" cy="125" r="2" fill="#fff" opacity=".8"/>
+          <circle cx="146" cy="121" r="12.5" fill="#2B1A3E"/><circle cx="151" cy="116" r="4.5" fill="#fff"/><circle cx="142" cy="125" r="2" fill="#fff" opacity=".8"/>
+          <g class="lids">
+            <circle cx="92" cy="118" r="27.5" fill="#FF6F61"/>
+            <circle cx="148" cy="118" r="27.5" fill="#FF6F61"/>
+          </g>
+          <path d="M113 142 L127 142 L120 154 Z" fill="#FFC24B"/>
+          <ellipse cx="70" cy="152" rx="10" ry="6.5" fill="#FF9E8A" opacity=".9"/>
+          <ellipse cx="170" cy="152" rx="10" ry="6.5" fill="#FF9E8A" opacity=".9"/>
+          <ellipse cx="104" cy="218" rx="10" ry="6" fill="#FFC24B"/>
+          <ellipse cx="136" cy="218" rx="10" ry="6" fill="#FFC24B"/>
+        </g>
+      </svg></div>
+      <span class="tag fresh">Fresh take</span>
+      <h2>Pip</h2>
+      <div class="species">the night owl</div>
+      <p class="voice">"It's 9pm. You know what that means. I've been awake for five minutes and I have IDEAS."</p>
+      <p class="why">The night-out metaphor made flesh: a <b>night owl</b> that wakes up when your evening does.
+      Owls come with the cutest feature for free — <b>enormous eyes</b> — plus a slow blink that reads pure charm.</p>
+      <p class="keeps">Keeps: <span>coral + gold, nocturnal theme, "knows every spot" wisdom</span></p>
+    </div>
+
+    <!-- ======================= 3 · LUMI ======================= -->
+    <div class="card">
+      <div class="stage"><svg viewBox="0 0 240 240">
+        <defs>
+          <radialGradient id="lumiG" cx="44%" cy="32%" r="78%">
+            <stop offset="0%" stop-color="#FF8A7B"/><stop offset="62%" stop-color="#FF6F61"/><stop offset="100%" stop-color="#EE5A49"/>
+          </radialGradient>
+          <radialGradient id="tail" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFE08A"/><stop offset="55%" stop-color="#FFC24B"/><stop offset="100%" stop-color="#FFC24B" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <g class="bob" style="animation-delay:.8s">
+          <g class="wingL"><ellipse cx="76" cy="88" rx="30" ry="18" fill="#F6ECD9" opacity=".5" transform="rotate(-24 76 88)"/></g>
+          <g class="wingR"><ellipse cx="164" cy="88" rx="30" ry="18" fill="#F6ECD9" opacity=".5" transform="rotate(24 164 88)"/></g>
+          <path d="M106 66 Q98 46 88 42" stroke="#E8533F" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M134 66 Q142 46 152 42" stroke="#E8533F" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <circle cx="88" cy="40" r="6" fill="#FFC24B"/><circle cx="152" cy="40" r="6" fill="#FFC24B"/>
+          <g class="glow"><circle cx="120" cy="196" r="30" fill="url(#tail)"/></g>
+          <ellipse cx="120" cy="134" rx="66" ry="62" fill="url(#lumiG)"/>
+          <ellipse cx="120" cy="182" rx="34" ry="22" fill="#FFC24B"/>
+          <circle cx="98" cy="130" r="10.5" fill="#2B1A3E"/><circle cx="102" cy="126" r="4" fill="#fff"/><circle cx="95" cy="133" r="1.7" fill="#fff" opacity=".8"/>
+          <circle cx="142" cy="130" r="10.5" fill="#2B1A3E"/><circle cx="146" cy="126" r="4" fill="#fff"/><circle cx="139" cy="133" r="1.7" fill="#fff" opacity=".8"/>
+          <ellipse cx="82" cy="150" rx="10.5" ry="6.5" fill="#FF9E8A" opacity=".9"/>
+          <ellipse cx="158" cy="150" rx="10.5" ry="6.5" fill="#FF9E8A" opacity=".9"/>
+          <path d="M113 150 Q120 157 127 150" stroke="#7A2A1C" stroke-width="5" fill="none" stroke-linecap="round"/>
+        </g>
+      </svg></div>
+      <span class="tag fresh">Fresh take</span>
+      <h2>Lumi</h2>
+      <div class="species">the firefly</div>
+      <p class="voice">"When my tail lights up, the plan is READY. It's lighting up. It's lighting up right now."</p>
+      <p class="why">A firefly gives the product a <b>native signal</b>: the glow pulses while FunTog thinks and
+      shines when plans land — a mascot whose body <b>is</b> the loading state. Flutter wings add constant gentle life.</p>
+      <p class="keeps">Keeps: <span>nightlife glow, coral + gold, the "spark" as literal light</span></p>
+    </div>
+
+    <!-- ======================= 4 · BOO ======================= -->
+    <div class="card">
+      <div class="stage"><svg viewBox="0 0 240 240">
+        <defs>
+          <radialGradient id="booG" cx="45%" cy="28%" r="85%">
+            <stop offset="0%" stop-color="#FFFDF6"/><stop offset="70%" stop-color="#F6ECD9"/><stop offset="100%" stop-color="#E9D9BC"/>
+          </radialGradient>
+        </defs>
+        <g class="float">
+          <g class="twinkle">
+            <path d="M186 74 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4 z" fill="#FFC24B"/>
+            <path d="M186 60 v8 M186 86 v8 M172 74 h8 M198 74 h8" stroke="#FFE08A" stroke-width="2.4" stroke-linecap="round"/>
+          </g>
+          <path d="M176 96 L166 118" stroke="#C9A468" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M120 44 C168 44 186 84 186 128 L186 176
+                   Q175 164 164 176 Q153 188 142 176 Q131 164 120 176
+                   Q109 188 98 176 Q87 164 76 176 L54 176 L54 128 C54 84 72 44 120 44 Z"
+                fill="url(#booG)"/>
+          <ellipse cx="60" cy="128" rx="13" ry="9" fill="#F6ECD9" transform="rotate(24 60 128)"/>
+          <ellipse cx="166" cy="120" rx="13" ry="9" fill="#F6ECD9" transform="rotate(-38 166 120)"/>
+          <circle cx="98" cy="112" r="11" fill="#2B1A3E"/><circle cx="102" cy="108" r="4" fill="#fff"/><circle cx="95" cy="115" r="1.8" fill="#fff" opacity=".8"/>
+          <circle cx="144" cy="112" r="11" fill="#2B1A3E"/><circle cx="148" cy="108" r="4" fill="#fff"/><circle cx="141" cy="115" r="1.8" fill="#fff" opacity=".8"/>
+          <ellipse cx="82" cy="132" rx="10" ry="6.5" fill="#FFB8A8" opacity=".95"/>
+          <ellipse cx="160" cy="132" rx="10" ry="6.5" fill="#FFB8A8" opacity=".95"/>
+          <ellipse cx="121" cy="134" rx="7" ry="8.5" fill="#7A4A3A"/>
+          <ellipse cx="121" cy="138" rx="4.5" ry="4" fill="#FF9E8A"/>
+        </g>
+      </svg></div>
+      <span class="tag fresh">Fresh take</span>
+      <h2>Boo</h2>
+      <div class="species">the party ghost</div>
+      <p class="voice">"I haunted every bar in this city so YOU don't have to. …Okay I'd also come with you."</p>
+      <p class="why">Marshmallow-soft with a <b>wavy little hem</b> and a sparkler it refuses to put down.
+      Ghosts license the mischief the brand already has — sneaking into venues, appearing with plans — while the
+      round-and-floaty body maxes out huggability.</p>
+      <p class="keeps">Keeps: <span>cheeky troublemaker energy, cream from the palette, sparkler = spark</span></p>
+    </div>
+
+    <!-- ======================= 5 · DIZZY ======================= -->
+    <div class="card">
+      <div class="stage"><svg viewBox="0 0 240 240">
+        <defs>
+          <radialGradient id="dizG" cx="40%" cy="30%" r="82%">
+            <stop offset="0%" stop-color="#FFE08A"/><stop offset="60%" stop-color="#FFC24B"/><stop offset="100%" stop-color="#F2A93B"/>
+          </radialGradient>
+          <clipPath id="dizClip"><circle cx="120" cy="128" r="72"/></clipPath>
+        </defs>
+        <g class="orbit">
+          <path d="M120 30 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FF8A7B"/>
+          <path d="M206 150 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5 z" fill="#F6ECD9" opacity=".85"/>
+          <path d="M36 160 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5 z" fill="#FF6F61" opacity=".9"/>
+        </g>
+        <g class="bob" style="animation-delay:1.1s">
+          <path d="M120 40 L120 58" stroke="#B9A7C9" stroke-width="3.5"/>
+          <circle cx="120" cy="128" r="72" fill="url(#dizG)"/>
+          <g clip-path="url(#dizClip)" opacity=".22" stroke="#FFF6DC" stroke-width="2">
+            <path d="M48 100 H192 M48 128 H192 M48 156 H192" fill="none"/>
+            <path d="M92 56 V200 M120 56 V200 M148 56 V200" fill="none"/>
+          </g>
+          <ellipse cx="46" cy="150" rx="12" ry="9" fill="#FF6F61"/>
+          <ellipse cx="194" cy="150" rx="12" ry="9" fill="#FF6F61"/>
+          <circle cx="96" cy="126" r="11" fill="#2B1A3E"/><circle cx="100" cy="122" r="4" fill="#fff"/><circle cx="93" cy="129" r="1.8" fill="#fff" opacity=".8"/>
+          <circle cx="144" cy="126" r="11" fill="#2B1A3E"/><circle cx="148" cy="122" r="4" fill="#fff"/><circle cx="141" cy="129" r="1.8" fill="#fff" opacity=".8"/>
+          <ellipse cx="80" cy="146" rx="10.5" ry="6.5" fill="#FF9E8A" opacity=".95"/>
+          <ellipse cx="160" cy="146" rx="10.5" ry="6.5" fill="#FF9E8A" opacity=".95"/>
+          <path d="M111 148 Q120 156 129 148" stroke="#8A5A16" stroke-width="5" fill="none" stroke-linecap="round"/>
+        </g>
+      </svg></div>
+      <span class="tag swing">Big swing</span>
+      <h2>Dizzy</h2>
+      <div class="species">the disco ball</div>
+      <p class="voice">"Hang me anywhere. I make it a party. That's it, that's the whole deal."</p>
+      <p class="why">Pure nightlife, zero explanation needed. The facets stay <b>faint</b> so the face wins,
+      the sparkle orbit does the razzle-dazzle, and gold becomes the hero color instead of the accent — the
+      boldest identity shift of the six.</p>
+      <p class="keeps">Keeps: <span>going-out DNA, the gold, celebration-as-default</span></p>
+    </div>
+
+    <!-- ======================= 6 · KOKO ======================= -->
+    <div class="card">
+      <div class="stage"><svg viewBox="0 0 240 240">
+        <defs>
+          <radialGradient id="kokoG" cx="43%" cy="30%" r="80%">
+            <stop offset="0%" stop-color="#FF8A7B"/><stop offset="62%" stop-color="#FF6F61"/><stop offset="100%" stop-color="#E8533F"/>
+          </radialGradient>
+          <radialGradient id="kokoFace" cx="50%" cy="35%" r="75%">
+            <stop offset="0%" stop-color="#FFFDF6"/><stop offset="100%" stop-color="#F6ECD9"/>
+          </radialGradient>
+        </defs>
+        <g class="bob" style="animation-delay:.6s">
+          <g class="sway">
+            <path d="M166 190 C 202 184 216 152 200 134 C 190 123 174 128 176 142 C 177 151 186 153 190 147"
+                  stroke="#E8533F" stroke-width="9" fill="none" stroke-linecap="round"/>
+          </g>
+          <circle cx="40" cy="112" r="22" fill="url(#kokoG)"/><circle cx="42" cy="112" r="11" fill="#FFD9C4"/>
+          <circle cx="200" cy="112" r="22" fill="url(#kokoG)"/><circle cx="198" cy="112" r="11" fill="#FFD9C4"/>
+          <ellipse cx="120" cy="140" rx="80" ry="74" fill="url(#kokoG)"/>
+          <path d="M112 70 C 112 58 124 56 128 62" stroke="#C9412F" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M78 118 a26 26 0 0 1 84 0 l0 26 a42 34 0 0 1 -84 0 Z" fill="url(#kokoFace)"/>
+          <circle cx="98" cy="134" r="10.5" fill="#2B1A3E"/><circle cx="102" cy="130" r="4" fill="#fff"/><circle cx="95" cy="137" r="1.7" fill="#fff" opacity=".8"/>
+          <circle cx="142" cy="134" r="10.5" fill="#2B1A3E"/><circle cx="146" cy="130" r="4" fill="#fff"/><circle cx="139" cy="137" r="1.7" fill="#fff" opacity=".8"/>
+          <ellipse cx="82" cy="154" rx="10" ry="6.5" fill="#FFB8A8" opacity=".95"/>
+          <ellipse cx="158" cy="154" rx="10" ry="6.5" fill="#FFB8A8" opacity=".95"/>
+          <circle cx="114" cy="153" r="2.6" fill="#8A4A3A"/><circle cx="126" cy="153" r="2.6" fill="#8A4A3A"/>
+          <path d="M112 164 Q120 172 128 164" stroke="#7A4A3A" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="50" cy="164" rx="14" ry="11" fill="#FF8A7B"/>
+          <path d="M40 150 q-10 -12 2 -20 q12 -8 16 6 q-14 -4 -18 14 z" fill="#FFC24B" transform="rotate(-12 46 142)"/>
+          <ellipse cx="190" cy="164" rx="14" ry="11" fill="#FF8A7B"/>
+          <ellipse cx="102" cy="212" rx="13" ry="7" fill="#EE5A49"/>
+          <ellipse cx="138" cy="212" rx="13" ry="7" fill="#EE5A49"/>
+        </g>
+      </svg></div>
+      <span class="tag fresh">Fresh take</span>
+      <h2>Koko</h2>
+      <div class="species">the cheeky monkey</div>
+      <p class="voice">"One more spot. ONE more. I know a rooftop. Bring the quiet one, it's their turn to pick."</p>
+      <p class="why">"Cheeky monkey" is <b>literally the brand adjective</b> — the mischief finally has a species.
+      Round side ears and a cream face patch do the cuteness; the tail curls into a <b>question mark</b>,
+      the product's founding question ("where are we going?") worn on the body. Swinging spot to spot <i>is</i> the venue arc.</p>
+      <p class="keeps">Keeps: <span>the troublemaker soul, coral + gold (banana included), Bengaluru street charm</span></p>
+    </div>
+
+  </div>
+
+  <footer>
+    <b>How to choose:</b> Momo is the safe pick — it upgrades cuteness without touching brand equity (the deck,
+    the demo, and the helper all keep their silhouette). Pip and Lumi trade a little continuity for a stronger
+    <i>story</i>: "night owl" and "glows when the plan's ready" are hooks people retell. Koko puts the brand adjective on four paws — the strongest personality match, and very Bengaluru. Boo keeps the most
+    mischief in the writing; Dizzy is the loudest room-read. All six share one rulebook: huge low-set eyes, tiny mouth,
+    permanent blush, one bouncing feature, mischief moved into the writing.
+  </footer>
+</div>
+</body>
+</html>
