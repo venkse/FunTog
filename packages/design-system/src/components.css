@@ -1,0 +1,206 @@
+/* FunTog component styles. Class vocabulary: ft-<component>[--modifier]. */
+
+/* ---------- base ---------- */
+.ft-root {
+  background: var(--ft-bg);
+  color: var(--ft-text);
+  font-family: var(--ft-font-body);
+  line-height: 1.5;
+  min-height: 100%;
+}
+
+/* ---------- Button ---------- */
+.ft-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ft-space-sm);
+  font-family: var(--ft-font-display);
+  font-weight: 600;
+  border: 1.5px solid transparent;
+  border-radius: var(--ft-radius-md);
+  cursor: pointer;
+  transition: transform 0.08s, filter 0.15s, border-color 0.15s, background 0.15s;
+  color: var(--ft-text);
+  background: transparent;
+}
+.ft-button:active { transform: translateY(1px); }
+.ft-button:focus-visible { outline: var(--ft-focus-ring); outline-offset: 2px; }
+.ft-button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+.ft-button--sm { font-size: var(--ft-text-sm); padding: 6px 14px; }
+.ft-button--md { font-size: var(--ft-text-md); padding: 10px 22px; }
+.ft-button--lg { font-size: var(--ft-text-lg); padding: 13px 28px; }
+.ft-button--full { width: 100%; }
+
+.ft-button--flame {
+  background: linear-gradient(180deg, var(--ft-flame-1), var(--ft-flame-2));
+  color: var(--ft-text-on-flame);
+}
+.ft-button--flame:hover:not(:disabled) { filter: brightness(1.06); }
+.ft-button--coral {
+  background: var(--ft-coral);
+  color: var(--ft-text-on-coral);
+}
+.ft-button--coral:hover:not(:disabled) { background: var(--ft-coral-dark); }
+.ft-button--outline {
+  border-color: var(--ft-border-strong);
+  background: var(--ft-surface);
+}
+.ft-button--outline:hover:not(:disabled) { border-color: var(--ft-coral); background: rgba(255, 111, 97, 0.14); }
+.ft-button--ghost { color: var(--ft-text-muted); }
+.ft-button--ghost:hover:not(:disabled) { color: var(--ft-text); background: var(--ft-surface); }
+
+/* ---------- Badge ---------- */
+.ft-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ft-space-xs);
+  font-family: var(--ft-font-body);
+  font-weight: 700;
+  font-size: var(--ft-text-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: var(--ft-radius-pill);
+  padding: 3px 10px;
+}
+.ft-badge--coral { background: rgba(255, 111, 97, 0.2); color: var(--ft-blush); }
+.ft-badge--flame { background: rgba(255, 138, 61, 0.2); color: var(--ft-spark); }
+.ft-badge--muted { background: var(--ft-surface); color: var(--ft-text-muted); }
+.ft-badge--cream { background: var(--ft-cream); color: var(--ft-ink); }
+
+/* ---------- Card ---------- */
+.ft-card {
+  background: var(--ft-surface);
+  border: 1.5px solid var(--ft-border);
+  border-radius: var(--ft-radius-lg);
+  padding: var(--ft-space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ft-space-md);
+  color: var(--ft-text);
+}
+.ft-card--interactive { cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.08s; }
+.ft-card--interactive:hover { border-color: var(--ft-coral); background: var(--ft-surface-raised); }
+.ft-card--selected { border-color: var(--ft-coral); box-shadow: 0 0 0 1px var(--ft-coral); }
+.ft-card__title {
+  font-family: var(--ft-font-display);
+  font-weight: 600;
+  font-size: var(--ft-text-lg);
+  color: var(--ft-spark);
+  margin: 0;
+  line-height: 1.35;
+}
+.ft-card__body { min-width: 0; }
+.ft-card__footer { display: flex; gap: var(--ft-space-sm); align-items: center; margin-top: var(--ft-space-xs); }
+
+/* ---------- Field (Input / Select) ---------- */
+.ft-field { display: flex; flex-direction: column; gap: 6px; }
+.ft-field__label {
+  font-family: var(--ft-font-body);
+  font-weight: 700;
+  font-size: var(--ft-text-sm);
+  color: var(--ft-text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ft-field__control {
+  font: inherit;
+  font-family: var(--ft-font-body);
+  color: var(--ft-text);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1.5px solid var(--ft-border);
+  border-radius: var(--ft-radius-md);
+  padding: 10px 14px;
+  min-width: 0;
+  transition: border-color 0.15s;
+}
+.ft-field__control::placeholder { color: var(--ft-text-muted); }
+.ft-field__control:hover { border-color: var(--ft-border-strong); }
+.ft-field__control:focus-visible { outline: var(--ft-focus-ring); outline-offset: 2px; }
+.ft-field--error .ft-field__control { border-color: var(--ft-danger); }
+.ft-field__hint { font-size: var(--ft-text-xs); color: var(--ft-text-muted); }
+.ft-field__hint--error { color: var(--ft-danger); }
+select.ft-field__control option { color: var(--ft-ink); }
+
+/* ---------- StopRow ---------- */
+.ft-stop { display: flex; gap: 10px; align-items: baseline; line-height: 1.4; }
+.ft-stop__time {
+  font-family: var(--ft-font-display);
+  font-weight: 600;
+  color: var(--ft-coral);
+  flex: 0 0 3.2em;
+}
+.ft-stop__what { font-weight: 600; }
+.ft-stop__tags { color: var(--ft-text-muted); font-size: var(--ft-text-sm); }
+
+/* ---------- PlanCard ---------- */
+.ft-plan-card { min-width: 240px; }
+.ft-plan-card__stops { display: flex; flex-direction: column; gap: var(--ft-space-sm); }
+
+/* ---------- Mascot ---------- */
+.ft-mascot { display: inline-block; }
+.ft-mascot svg { overflow: visible; display: block; }
+.ft-mascot .ft-m-body-group,
+.ft-mascot .ft-m-flame,
+.ft-mascot .ft-m-brow,
+.ft-mascot .ft-m-eyelid,
+.ft-mascot .ft-m-pupil,
+.ft-mascot .ft-m-sparkles {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.ft-mascot .ft-m-body-group { animation: ft-m-bob 2.6s ease-in-out infinite; }
+.ft-mascot .ft-m-flame { transform-origin: bottom center; animation: ft-m-flicker 0.7s ease-in-out infinite alternate; }
+.ft-mascot .ft-m-eyelid { transform: scaleY(0); animation: ft-m-blink 4.2s ease-in-out infinite; }
+.ft-mascot .ft-m-mouth { opacity: 0; }
+.ft-mascot .ft-m-mouth--smile { opacity: 1; }
+.ft-mascot .ft-m-sparkles { opacity: 0; }
+
+.ft-mascot--plotting .ft-m-brow { transform: translateY(3px) rotate(8deg); }
+.ft-mascot--plotting .ft-m-brow--r { transform: translateY(3px) rotate(-8deg); }
+.ft-mascot--plotting .ft-m-mouth--smile { opacity: 0; }
+.ft-mascot--plotting .ft-m-mouth--smirk { opacity: 1; }
+
+.ft-mascot--thinking .ft-m-pupil { transform: translate(2px, -3px); }
+.ft-mascot--thinking .ft-m-brow--l { transform: translateY(-1px) rotate(-6deg); }
+.ft-mascot--thinking .ft-m-mouth--smile { opacity: 0; }
+.ft-mascot--thinking .ft-m-mouth--flat { opacity: 1; }
+
+.ft-mascot--mischief .ft-m-brow { animation: ft-m-wiggle 0.5s ease-in-out infinite; }
+.ft-mascot--mischief .ft-m-pupil { transform: translateX(3px); }
+.ft-mascot--mischief .ft-m-mouth--smile { opacity: 0; }
+.ft-mascot--mischief .ft-m-mouth--smirk { opacity: 1; }
+
+.ft-mascot--smug .ft-m-body-group { transform: rotate(-5deg); animation: none; }
+.ft-mascot--smug .ft-m-eyelid { transform: scaleY(0.55); animation: none; }
+.ft-mascot--smug .ft-m-mouth--smile { opacity: 0; }
+.ft-mascot--smug .ft-m-mouth--smirk { opacity: 1; }
+
+.ft-mascot--wink .ft-m-eyelid--r { transform: scaleY(1); animation: none; }
+.ft-mascot--wink .ft-m-mouth--smile { opacity: 0; }
+.ft-mascot--wink .ft-m-mouth--grin { opacity: 1; }
+.ft-mascot--wink .ft-m-sparkles { opacity: 1; }
+
+.ft-mascot--tada .ft-m-mouth--smile { opacity: 0; }
+.ft-mascot--tada .ft-m-mouth--open { opacity: 1; }
+.ft-mascot--tada .ft-m-sparkles { opacity: 1; animation: ft-m-spark 1.4s ease-out infinite; }
+
+.ft-mascot--cheer .ft-m-body-group { animation: ft-m-bob 1.4s ease-in-out infinite; }
+.ft-mascot--cheer .ft-m-mouth--smile { opacity: 0; }
+.ft-mascot--cheer .ft-m-mouth--open { opacity: 1; }
+.ft-mascot--cheer .ft-m-sparkles { opacity: 1; animation: ft-m-spark 1.4s ease-out infinite; }
+
+@keyframes ft-m-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes ft-m-flicker { 0% { transform: scaleY(1) skewX(0); } 100% { transform: scaleY(1.12) skewX(-5deg); } }
+@keyframes ft-m-blink { 0%, 92%, 100% { transform: scaleY(0); } 95% { transform: scaleY(1); } }
+@keyframes ft-m-wiggle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px) rotate(-6deg); } }
+@keyframes ft-m-spark { 0% { opacity: 0; transform: scale(0.4); } 30% { opacity: 1; } 100% { opacity: 0; transform: scale(1.5); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ft-mascot .ft-m-body-group,
+  .ft-mascot .ft-m-flame,
+  .ft-mascot .ft-m-eyelid,
+  .ft-mascot .ft-m-brow,
+  .ft-mascot .ft-m-sparkles { animation: none !important; }
+}

@@ -1,0 +1,54 @@
+/* FunTog design tokens. All component styles resolve through these variables. */
+:root {
+  /* color */
+  --ft-plum: #1e1430;
+  --ft-plum-2: #2a1c44;
+  --ft-plum-3: #34225a;
+  --ft-coral: #ff6f61;
+  --ft-coral-dark: #e8533f;
+  --ft-flame-1: #ffd66b;
+  --ft-flame-2: #ff8a3d;
+  --ft-spark: #ffe08a;
+  --ft-blush: #ff9e8a;
+  --ft-cream: #f6ecd9;
+  --ft-muted: #b9a7c9;
+  --ft-ink: #23163b;
+
+  /* semantic surfaces (dark-first: FunTog lives on plum) */
+  --ft-bg: radial-gradient(120% 90% at 50% 8%, var(--ft-plum-3) 0%, var(--ft-plum) 55%, #160e26 100%);
+  --ft-surface: rgba(255, 255, 255, 0.055);
+  --ft-surface-raised: rgba(255, 255, 255, 0.09);
+  --ft-border: rgba(255, 255, 255, 0.14);
+  --ft-border-strong: rgba(255, 255, 255, 0.24);
+  --ft-text: var(--ft-cream);
+  --ft-text-muted: var(--ft-muted);
+  --ft-text-on-flame: #3a1c00;
+  --ft-text-on-coral: #2a0e0a;
+  --ft-danger: #ff5d73;
+
+  /* type */
+  --ft-font-display: "Fredoka", system-ui, sans-serif;
+  --ft-font-body: "Nunito", system-ui, sans-serif;
+  --ft-text-xs: 0.72rem;
+  --ft-text-sm: 0.85rem;
+  --ft-text-md: 1rem;
+  --ft-text-lg: 1.15rem;
+  --ft-text-xl: 1.6rem;
+
+  /* space */
+  --ft-space-xs: 4px;
+  --ft-space-sm: 8px;
+  --ft-space-md: 14px;
+  --ft-space-lg: 20px;
+  --ft-space-xl: 32px;
+
+  /* shape */
+  --ft-radius-sm: 8px;
+  --ft-radius-md: 12px;
+  --ft-radius-lg: 16px;
+  --ft-radius-pill: 999px;
+
+  /* effects */
+  --ft-focus-ring: 3px solid var(--ft-spark);
+  --ft-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
